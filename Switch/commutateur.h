@@ -10,3 +10,9 @@
 /** Structures **/
 
 /** variables publiques  **/
+
+
+
+
+/*  Portotypes de fonctions */ 
+void *mortdefils (int sig);

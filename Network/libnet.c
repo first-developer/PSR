@@ -99,9 +99,7 @@ int socketVersNom(int ds,char *nom)
 
 int connexionServeur(char *hote,int port)
 {
-	// 1.Initialisation du serveur avec le 'port'
-	// > verification s'il existe un port libre = 'port'
-	// Renvoie le df retourné par "initialisationServeur"
+	
 	return -1;
 }
 
@@ -109,7 +107,7 @@ int connexionServeur(char *hote,int port)
 /** du port utilise. La fonction retourne le descripteur **/
 /** de socket ou -1 en cas d'erreur.                     **/
 
-int initialisationServeur(short int *port)
+int initialisationServeur(short int *port , int connexions)
 {
 	int df;
 	struct sockaddr_in adresse;
@@ -118,10 +116,10 @@ int initialisationServeur(short int *port)
 
 	/* Creation d'une socket */
 	df=socket(PF_INET,SOCK_STREAM,0);
-	if(df<0){
-  	perror("initialisationServeur.socket");
-  	exit(-1);
-  }
+	if(df<0) {
+  		perror("initialisationServeur.socket");
+  		exit(-1);
+  	}
 
 	/* On fixe l'adresse de la socket */
 	adresse.sin_family=AF_INET;
@@ -149,34 +147,24 @@ int initialisationServeur(short int *port)
 /** Les sockets de dialogue sont passees a la fonction   **/
 /** de traitement                                        **/
 
-int boucleServeur(int ecoute,void (*traitement)(int))
+int boucleServeur(int fd_socket_server, void (*traitement)(int))
 {
 	struct sockaddr_in adresse;
 	socklen_t taille=sizeof adresse;
 	int dialogue;
 
-	while(1){
+	while(1) {
 	  /* Attente d'une connexion */
-	  dialogue = accept(ecoute,(struct sockaddr *)&adresse,&taille);
+	  dialogue = accept(fd_socket_server,(struct sockaddr *)&adresse,&taille);
 	  if(dialogue<0) return -1;
 
 	  /* Passage de la socket de dialogue a la fonction de traitement */
-	  if(traitement(dialogue)<0){ close(ecoute); return 0;}
+	  traitement(dialogue);
 	}
 }
 
 int gestionClient(int sd){
-	int pid;
-	int statut;
-
-	pid=fork();
-	if(pid<0){perror("fork"); exit(-1);}
-	if(pid!=0)
-		  close(sd);
-	else{
-  	dup2(sd,0); dup2(sd,1); dup2(sd,2);
-  	statut=execl(CHEMIN_PROGRAMME,CHEMIN_PROGRAMME,NULL);
-  }  
+	
 	return 0;
 }
 
