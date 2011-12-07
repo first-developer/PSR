@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <netdb.h>
 #include <stddef.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -30,7 +31,10 @@
 
 /**** Constantes ****/
 
-#define TAP_PRINCIPAL	"/dev/net/tun"
+#define 	TAP_PRINCIPAL	"/dev/net/tun"
+#define 	BUFFER_SIZE		256
+#define 	h_addr 			h_addr_list[0]
+
 
 /**** Variables globales *****/
 
@@ -81,7 +85,11 @@ void afficheHote(FILE *flux,struct hostent *hote)
 
 int nomVersAdresse(char *hote,struct in_addr *adresse)
 {
-	/* votre code ici */
+	if (inet_aton((const char *)hote, adresse) < 0) {
+		printf("nomVersAdresse:inet_aton failed\n");
+		exit(-1);
+	} ;
+
 	return 0;
 }
 
@@ -90,8 +98,34 @@ int nomVersAdresse(char *hote,struct in_addr *adresse)
 
 int socketVersNom(int ds,char *nom)
 {
-	/* votre code ici */
-	return -1;
+	struct sockaddr_in adresse;
+	socklen_t socket_size;
+	struct hostent* Host;
+	socket_size = sizeof(struct sockaddr_in);
+
+	// Set address params with the socket descriptor
+	if (getpeername(ds, (struct sockaddr*) &adresse, &socket_size) < 0)
+	{
+		fprintf(stderr, "socketVersNom:getpeername error\n");
+		return -1;
+	}
+	
+	
+	// get addr size
+	int addr_size = sizeof(adresse.sin_addr);
+	// get name of connected machine by host name 
+	Host = gethostbyaddr( (const char*)&(adresse.sin_addr), addr_size, AF_INET );
+
+	if ( Host == NULL ) {
+		// get host name 
+		strcpy(nom, inet_ntoa(adresse.sin_addr));
+		return -1;
+	}
+	else {	
+		// Set machine name
+		strcpy(nom, Host->h_name);
+		return 0;
+	}
 }
 
 /** Ouvre une socket sur un hote et un port determine   **/
@@ -99,8 +133,29 @@ int socketVersNom(int ds,char *nom)
 
 int connexionServeur(char *hote,int port)
 {
+	int df;
+	struct sockaddr_in adresse;
+	struct in_addr adresseIP;
+	int statut;
+
+	/* Creation d'une socket */
+	df=socket(PF_INET,SOCK_STREAM,0);
+	if(df<0){
+	  perror("connexionServeur.socket");
+	  exit(-1);
+	}
+	adresse.sin_family = AF_INET;
 	
-	return -1;
+	// Set the port of the socket 
+	adresse.sin_port = htons(port);
+	
+	// Set IP address of the socket with host name given
+	statut=nomVersAdresse(hote,&adresseIP);
+	if(statut<0) return -1;
+		
+	if(connect(df,(struct sockaddr *)&adresse,sizeof(adresse))<0) return(-1);
+	else return df;
+
 }
 
 /** Ouvre une socket en lecture et retourne le numero    **/

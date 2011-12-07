@@ -18,13 +18,15 @@
 #include <netdb.h>
 #include <string.h>
 #include <getopt.h>
-#include "commutateur.h" 
+#include "commutateur.h"
+
 
 /** Constantes **/
 
 #define		DEFAULT_PORT	4000
 #define  	MAX_CONNEXIONS	10
 #define 	MAX_SIZE		1000
+#define 	BUFFER_SIZE		256
 
 
 
@@ -67,14 +69,26 @@ void *mortdefils (int sig) {};
 // traitement 
 void *traitement (int fd) {
 	char buffer[MAX_SIZE];
-	
+	char nom[BUFFER_SIZE];
 	FILE* fserver;
+	int lportIsSet = 0;  // Flag to know if lport cmt is entered
+
+	// Display machine address
+	socketVersNom(fd, nom);
+
+	printf(" Nom de la machine: %s\n", nom);
+
 	fserver = fdopen(fd, "a+");
 
 	while (fgets(buffer, MAX_SIZE, fserver) != NULL) {
+		if ( strcmp(buffer, "lport") != 0 ) {
+			lportIsSet = 1;
+		}
+		else  if ( lportIsSet && (strcmp(buffer, "dport") != 0) ) {
+			fclose(fserver);		
+		}
 		printf(" > %s", buffer);
 	}
-	fclose(fserver);
 };
 
 
