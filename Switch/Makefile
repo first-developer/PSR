@@ -7,8 +7,8 @@
 
 OBJS = commutateur.o gestionConnexions.o algorithmeCommutateur.o gestionAdmin.o commandesAdmin.o
 LIBS = -lpthread
-LOCAL_LIBS = -L ../Network # -L ../Threads -L ../IPC
-LOCAL_LIBS += -lnet  #-lthrd -lipc
+LOCAL_LIBS = -L ../Network  -L ../Threads #-L ../IPC
+LOCAL_LIBS += -lnet  -lthreads #-lipc
 CFLAGS += -I ../Network -I ../Threads -I ../IPC 
 
 #

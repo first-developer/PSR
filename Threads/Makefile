@@ -7,7 +7,7 @@
 
 export CC = gcc
 export LD = gcc
-export CLIB = ar cq
+export CLIB = ar cq -lpthread
 export CFLAGS = -g -Wall -DDEBUG
 
 OBJS = libthreads.o

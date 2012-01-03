@@ -1,0 +1,114 @@
+
+------------------------------
+NOTION DE COMMUTATEUR VIRTUEL
+------------------------------
+
+un commutateur est un tableau de port (structure) décrite comme suit :
+
+- (*) tab_admin: tableau de clients admin en attente d'infos
+- port {
+    - etat du port ( connecté ou deconnecté )
+    - type { 0: interface Ethernet, 1:connexion TCP }
+    - la liste des adresse ethernet associées
+    - le numero de VLAN 
+    - (*) descripteur de connexion (structure)
+    - received: nbre d'octet reçu
+    - send: nbr d'octet envoyé
+  }
+
+    (*) descripteurs de conexion {
+      - descripteur de fichier pour les interfaces Ethernet virtuelles
+      - descriteur de socket pour les connexion inter-commutateur
+    }
+  
+
+------------------------------
+CONNEXION INTER COMMUTATEUR
+------------------------------
+
+A   ------------------------------------>   B
+
+1.  A  <----- se connecte avec---------->   B
+2.  A  ----------{lport <N° de port>} -->   B
+3.  A  <----- {OK SYNTAX,BOUNDS} --------   B
+2.  A  ----------{dport <N° de port>} -->   B
+4.  Si le port distant (dport) est libre:
+    A  <----- {OK SYNTAX,BOUNDS} --------   B
+    A  < init la structure du port local: 
+          { 
+            - etat: connecté
+            - descp. de connexion {
+                - ?
+                - desc. socket de connexion
+              }
+          }
+      >---------------------------------<
+        init la structure du port local >   B
+          { 
+            - etat: connecté
+            - descp. de connexion {
+                - ?
+                - desc. socket de dialogue
+              }
+          }
+    Si A ou B veut terminer la connexion:
+    A ou B execute:
+      - <close(socket de connexion)>
+      - lport ou dport.etat = deconnecté
+      - shutdown(thread) processus leger
+
+
+------------------------------
+LES REQUETES ADMINISTRATEUR
+------------------------------
+
+les différentes requêtes acceptées
+- aide: listes des requetes
+
+- lister: liste les ports i(connecté ou déconnecté) d'un commutateur
+
+- afficher <n° port>: affiche les détails d'un port
+
+- adresses <n° port>: liste les adr. ethernet du port avec leur age
+
+- connecter_tap <n° port>: conecter un port à une interface virtuelle 
+                           le commutateur cré l'intf et renvoie son nom
+
+- connecter_tcp <n° lport>: [<port TCP>@]<nom machine>:<n° dport>
+    connecter un lport à un port de commutateur distant (préciser en cas d'echec)
+
+- vlan <n°port>:<n° port vlan>:
+    affecter un numéro de VLAN à un port local ; 
+
+- deconnecter <n° de port> :
+    déconnecter un lportl de son intf Eth virt ou de son commutateur distant
+    et donc arrêter le thread correspondant ; 
+
+- stats <n° de port> :
+    afficher les statistiques d'un port, c'est à dire le nombre d'octets reçus 
+    sur le port et le nombre d'octets envoyés du port  
+
+scruter :
+    scruter les événements de configuration du commutateur, 
+    principalement les <connexions> et <déconnexions> de ports ; 
+
+sniffer <n° de port> :
+    afficher les paquets arrivant ou partant d'un port, plusieurs gestionnaires
+     doivent pouvoir être lancés pour surveiller plusieurs ports ; 
+
+stopper :
+    arrêter le commutateur virtuel. 
+
+-----------------------------------
+PRECISION SUR LES COMMUNCATIONS    
+-----------------------------------
+
+commutateur <--------> client admin: IPC
+
+exec simultannée de plusieurs clients {
+  - créer une file de message reponse par client 
+  - envoyer le descripteur de la file dans les requetes
+
+cmd <scruter>, <sniffer> : 
+  - utiliser (*) tab_admin de la structure du commutateur virtuel
+  - proteger l'acces à tab_admin
