@@ -4,6 +4,7 @@
 // On previent les inclusions multiples 
 #ifdef 	HEADER_FILE
 #define HEADER_FILE
+#endif
 
 /**** Constantes ****/
 
@@ -19,11 +20,10 @@
  */
 
 /**** Fonctions ****/
-
+void * thread_handler(void *arg);
 int lanceThread(void (*fn) (int), int);
 
 
 #ifdef DEBUG
 #endif
 
-#endif

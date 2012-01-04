@@ -50,7 +50,9 @@ void * maFonction( (params *) p) {
 #include <linux/if.h>
 #include <linux/if_tun.h>
 
+#include "gestionConnexions.h"
 #include "libnet.h"
+
 
 /**** Constantes ****/
 

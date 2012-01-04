@@ -2,3 +2,5 @@
 .project
 toto
 .settings/
+*/*.o
+*/*.a
