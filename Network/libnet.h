@@ -1,11 +1,5 @@
 /** fichier libnet.h **/
 
-
-// On previent les inclusions multiples 
-#ifdef 	HEADER_FILE
-
-#define HEADER_FILE
-#endif
 /******************************************************************/
 /** Ce fichier decrit les structures et les constantes utilisees **/
 /** par les fonctions de gestion des sockets.                    **/

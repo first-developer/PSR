@@ -21,9 +21,9 @@
 
 
 #include "libnet.h"
-#include "libthreads.h"
+#include "libthrd.h"
 #include "gestionConnexions.h"
-
+#include "gestionAdmin.h"
 #include "commutateur.h"
 
 /** Constantes **/
@@ -56,6 +56,11 @@
 
 /** Fonctions utiles  **/
 
+// Cancel : perror following by exit 
+void cancel( char* msg) {
+	perror(msg);
+	exit(-1);
+}
 
 unsigned short int get_port_from_options(int argc,char **argv) {
 	int option_index = 0;
@@ -121,10 +126,44 @@ void init_and_loop_server(int argc, char**argv) {
 		exit(1);
 	}
 }
-/** Procedure principale **/
 
+
+// Create_and_init_commutator: crée et initialise le commutateur   
+Commutator* create_and_init_commutator(AdminClientList ac, PortsList p) {
+	Commutator * commutateur = (Commutator *) malloc(sizeof(Commutator));
+	if (commutateur == NULL) {
+#ifdef DEBUG
+		cancel("create_and_init_commutator.malloc");
+#endif
+	}
+	commutateur->admin_clients = ac;
+	commutateur->ports = p;
+	return commutateur;
+}
+
+// create_and_init_port: crée et initialise le port
+Port* create_and_init_port( int num, int type, int nVlan) {
+	Port* p = (Port*)malloc(sizeof(Port));
+	if (p == NULL) {
+#ifdef DEBUG
+		cancel("create_and_init_port.malloc");
+#endif
+	}
+	p->num = num;
+	p->type = type;
+	p->nVlan = nVlan;								
+	p->rcv_size = 0; 							 
+	p->snd_size = 0;
+	
+	return p;	
+}
+
+
+
+// Procedure principale
+// --------------------
 int main(int argc,char **argv) {
 
-	init_and_loop_server(argc, argv);
+	//init_and_loop_server(argc, argv);
 	return 0;
 }

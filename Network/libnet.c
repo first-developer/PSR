@@ -5,30 +5,9 @@
 /** serveur de commandes et concernant les sockets.        **/
 /************************************************************/
 
-/*
 
-
-void * f(int) {
-
-}
-
-
-struct params {
-	void (*) (int) fonction;
-	int toto;
-}
-
-
-void * maFonction( (params *) p) {
-	lanceThread( p->fonction, p->toto);
-}
-
-
- */
-
-
-
-/**** Fichiers d'inclusion ****/
+// Fichiers d'inclusion
+// --------------------
 
 #include <stdio.h>
 #include <stdlib.h>

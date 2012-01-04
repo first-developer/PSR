@@ -21,7 +21,7 @@
 #include <getopt.h>
 
 #include "libnet.h"
-#include "libthreads.h"
+#include "libthrd.h"
 #include "gestionConnexions.h"
 
 

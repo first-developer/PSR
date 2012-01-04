@@ -10,24 +10,24 @@ export LD = gcc
 export CLIB = ar cq -lpthread
 export CFLAGS = -g -Wall -DDEBUG
 
-OBJS = libthreads.o
+OBJS = libthrd.o
 
-all: libthreads.a
+all: libthrd.a
 
 #
 # Cleaning target
 #
 
 clean: 
-	rm -f core *.o libthreads.a
+	rm -f core *.o libthrd.a
 
 #
 # Library target
 #
 
-libthreads.o: libthreads.c libthreads.h
-	$(CC) -c $(CFLAGS) $(LIBS) libthreads.c
+libthrd.o: libthrd.c libthrd.h
+	$(CC) -c $(CFLAGS) $(LIBS) libthrd.c
  
-libthreads.a: $(OBJS)
+libthrd.a: $(OBJS)
 	rm -f $@
 	$(AR) rcs $@ $+
