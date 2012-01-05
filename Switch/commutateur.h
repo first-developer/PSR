@@ -33,6 +33,10 @@ typedef struct {
   unsigned char bytes[ETHERNET_ADDRESS_SIZE];
 } EthernetAddress;
 
+typedef struct {
+  EthernetAddress list[NBR_MAX_ETHERNET_ADDR];
+} EthernetAddresses;
+
 // descripteurs de connexion
 typedef struct {
 	int fd;
@@ -43,7 +47,7 @@ typedef struct {
 	short int num;
 	int etat;								// Etat du port
 	int type;								// Type du port
-	EthernetAddress ethernet_addr_list[NBR_MAX_ETHERNET_ADDR];
+	EthernetAddresses eth_addresses;
 	int vlan;								// Numéro de VLAN
 	Connection_descriptors dc; 				// descripteurs de connexion
 	int rcv_size; 							// Taille des données reçues 
@@ -52,12 +56,12 @@ typedef struct {
 
 typedef struct {
 	Port list[NBR_MAX_PORT];
-} PortsList;
+} PortList;
 
 
 typedef struct {
-	AdminClientList admin_clients;  	// liste des clients en attente d'infos
-	PortsList ports; 						// L'ensemble des ports du commutateur	
+	AdminList admins;  	// liste des clients en attente d'infos
+	PortList ports; 	// L'ensemble des ports du commutateur	
 } Commutator;
 
 
@@ -66,8 +70,16 @@ typedef struct {
 
 // Prototypes de fonctions 
 // -----------------------
-Commutator* create_and_init_commutator(AdminClientList , PortsList );
-Port* 	create_and_init_port( int num, int type, int nVlan);
+
+// Ports
+Port* 	create_port( int num, int type, int nVlan);
+PortList* create_port_list();
+
+// Commutateur
+Commutator* create_commutator();
+void add_port_to_commutator(Port* p, Commutator c);
+void add_admins_to_commutator(Admin* a, Commutator c);
+
 void *mortdefils (int sig);
 void cancel(char*);
 void init_and_loop_server(int , char**);

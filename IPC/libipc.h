@@ -1,16 +1,23 @@
 /*  PSR/IPC/libipc.h  */
 
-// Constantes
+// Structures
 // ----------
 
-#define FILE_PATH	"."
-#define LIBIPC_ID	0	
+#define 	IPC_MESSAGE_SIZE			1024
+#define 	IPC_FILE_PATH				"."
+#define 	IPC_DEFAULT_ID				0
+#define 	IPC_KEY_GENERATION_TYPE		1
+
+// Macros
+// ------
+
+
 // Prototypes 
 // ----------
 
-void cancel( char* msg);
-void send_message( int cle, int type, char* data  );
-void receive_message( int cle, int type, char* data  );
+int generate_admin_ICP_key();
+void IPC_send_message( int ICP_key, int IPC_type, char* IPC_data  );
+void IPC_receive_message( int ICP_key, int IPC_type, char* IPC_data  );
 
 #ifdef DEBUG
 #endif

@@ -4,25 +4,34 @@
 /**********************************************************************/
 #ifndef HEADER_GEST_ADMIN
 #define HEADER_GEST_ADMIN
+
 // Inclusions
 // ----------
 
 // Constantes
 // ----------
 
-#define NBR_MAX_CLIENT	5
+#define NBR_MAX_ADMIN	5
 
 
 // Structures 
 // ----------
 
 typedef struct {
-} AdminClient;
+	int key;  // IPC key for requesting
+} Admin;
 
 typedef struct {
-	AdminClient list[NBR_MAX_CLIENT];
-} AdminClientList;
+	Admin list[NBR_MAX_ADMIN];
+} AdminList;
 
 
 // Fonctions
+// ---------
+
+
+Admin* create_admin( int AdminRequestKey);
+AdminList* create_admin_list();
+
+
 #endif

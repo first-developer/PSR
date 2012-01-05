@@ -4,7 +4,8 @@
 /** Commutateur virtuel pour etablir des VPN                     **/
 /******************************************************************/
 
-/** Fichiers d'inclusion **/
+// Inclusions
+// -----------
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,8 +26,10 @@
 #include "gestionConnexions.h"
 #include "gestionAdmin.h"
 #include "commutateur.h"
+#include "logger.h"
 
-/** Constantes **/
+// Constants
+// ----------
 
 #define		DEFAULT_PORT		4000
 #define  	MAX_CONNEXIONS		10
@@ -35,26 +38,17 @@
 #define 	SERVER_LOCAL_PORT 	5000
 #define 	SERVER_LOCAL_IP   	"127.0.0.1"
 
-// COLORS FOR DEBUG
+
+// Public variables 
+// -----------------
+
+
+// Static variables 
+// -----------------
+
+
+// Helper functions 
 // ----------------
-#define BLACK   "\033[0;30m"
-#define BLUE    "\033[0;34m"
-#define GREEN   "\033[0;32m"
-#define RED     "\033[0;31m"
-#define MAGENTA "\033[0;35m"
-#define BBLACK   "\033[1;30m"
-#define BBLUE    "\033[1;34m"
-#define BGREEN   "\033[1;32m"
-#define BRED     "\033[1;31m"
-#define BMAGENTA "\033[1;35m"
-
-
-
-/** Variables publiques **/
-
-/** Variables statiques **/
-
-/** Fonctions utiles  **/
 
 unsigned short int get_port_from_options(int argc,char **argv) {
 	int option_index = 0;
@@ -78,7 +72,9 @@ unsigned short int get_port_from_options(int argc,char **argv) {
 				port = atoi(argv[2]);
 			}
 			else { // is 'h' options
-				fprintf(stderr, "    %sHELP > %sSyntaxe : %s%s%s [-p | --port port]%s\n", BRED, BBLACK, BLACK, argv[0], BBLUE, BLACK);
+				start_help((" Erreur de syntax"))
+				fprintf(stderr, "    %s> Syntaxe : %s%s%s [-p | --port port]%s\n", BBLACK, BLACK, argv[0], BBLUE, BLACK);
+				end_log()
 				port = DEFAULT_PORT;
 			}
 		}
@@ -95,53 +91,53 @@ void init_and_loop_server(int argc, char**argv) {
 
 	// recupération du port entré par l'utilisateur
 	if ( (port = get_port_from_options(argc, argv)) == DEFAULT_PORT ) {
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	// récuperation du descripteur de la socket serveur
 	contact_socket = initialisationServeur(&port , MAX_CONNEXIONS);
 	if ( contact_socket < 0 ) {
-#ifdef DEBUG
-		printf("Main.initialisationServeur: la recupération du descripteur de la socket\
-	             liée au serveur a échoué sur le port [%d].\n", port);
-#endif
-		exit(1);
+		err_log(("Main.initialisationServeur: la recupération du descripteur de la socket\
+	             liée au serveur a échoué sur "))
+		exit(EXIT_FAILURE);
 	}
-
+	
 	// Affichage des données du serveur
+	start_log(("Affichage des données du serveur"))
 	printf("%sSERVEUR %s", BRED, BLACK);
 	displaySocketAddress(stdout, contact_socket);
+	end_log()
 
 	// Lancement de la boucle d'écoute
 	if (boucleServeur( contact_socket, handle_thread_by_port) < 0) {
-#ifdef DEBUG
-		perror("Main.boucleServeur: erreur lors du lancement de l'écoute.\n");
-#endif
-		exit(1);
+		err_log("Main.boucleServeur: erreur lors du lancement de l'écoute");
+		exit(EXIT_FAILURE);
 	}
 }
 
 
 // Create_and_init_commutator: crée et initialise le commutateur   
-Commutator* create_and_init_commutator(AdminClientList ac, PortsList p) {
+Commutator* create_commutator() {
 	Commutator * commutateur = (Commutator *) malloc(sizeof(Commutator));
 	if (commutateur == NULL) {
-#ifdef DEBUG
-		cancel("create_and_init_commutator.malloc");
-#endif
+		err_log(("create_and_init_commutator.malloc"))
+		exit(EXIT_FAILURE);
 	}
-	commutateur->admin_clients = ac;
-	commutateur->ports = p;
+	AdminList *AL = create_admin_list();
+	PortList  *PL = create_port_list();
+
+	commutateur->admins = *AL;
+	commutateur->ports  = *PL;
+
 	return commutateur;
 }
 
 // create_and_init_port: crée et initialise le port
-Port* create_and_init_port( int num, int type, int nVlan) {
+Port* create_port( int num, int type, int nVlan) {
 	Port* p = (Port*)malloc(sizeof(Port));
 	if (p == NULL) {
-#ifdef DEBUG
-		cancel("create_and_init_port.malloc");
-#endif
+		err_log(("create_and_init_port.malloc"))
+		exit(EXIT_FAILURE);
 	}
 	p->num = num;
 	p->type = type;
@@ -152,12 +148,23 @@ Port* create_and_init_port( int num, int type, int nVlan) {
 	return p;	
 }
 
+// create_port_list: create a list
+PortList* create_port_list() {
+	PortList* pl = (PortList*)malloc(sizeof(PortList));
+	if (pl == NULL) {
+		err_log("create_and_init_port.malloc");
+		exit(EXIT_FAILURE);
+	}
+	return pl;
+}
+
+
 
 
 // Procedure principale
 // --------------------
 int main(int argc,char **argv) {
 
-	//init_and_loop_server(argc, argv);
+	init_and_loop_server(argc, argv);
 	return 0;
 }

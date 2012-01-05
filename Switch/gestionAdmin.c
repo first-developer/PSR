@@ -24,10 +24,34 @@
 #include "libipc.h"
 #include "commutateur.h"
 #include "gestionAdmin.h"
+#include "logger.h"
 
-/** Constantes **/
+// Constants
+// ---------
 
-/** Variables externes **/
+// External variables
+// -------------------
 
-/** Fonction principale de gestion de l'agent d'administration **/
+// Fonctions principale de gestion de l'agent d'administration 
+// ------------------------------------------------------------
 
+// create_admin: crée et initialise un admin
+Admin* create_admin( int AdminRequestKey) {
+	Admin* admin = (Admin*)malloc(sizeof(Admin));
+	if (admin == NULL) {
+		err_log("create_admin.malloc");
+		exit(EXIT_FAILURE);
+	}
+	admin->key = AdminRequestKey;
+	return admin;	
+}
+
+// create_admin_list: create a list of admins
+AdminList* create_admin_list() {
+	AdminList* AL = (AdminList*)malloc(sizeof(AdminList));
+	if (AL == NULL) {
+		err_log("create_admin_list.malloc");
+		exit(EXIT_FAILURE);
+	}
+	return AL;
+}

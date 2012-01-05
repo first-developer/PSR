@@ -5,7 +5,7 @@
 #
 # Constantes pour la compilation des programmes
 #
-
+CFLAGS += -I ../Logger
 OBJS = libipc.o
 
 all: libipc.a

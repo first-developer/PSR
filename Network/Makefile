@@ -2,7 +2,7 @@
 # Makefile pour generer la bibliotheque de fonctions reseau
 #
 
-CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch
+CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Logger
 
 all: libnet.a
 	
