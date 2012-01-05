@@ -56,12 +56,6 @@
 
 /** Fonctions utiles  **/
 
-// Cancel : perror following by exit 
-void cancel( char* msg) {
-	perror(msg);
-	exit(-1);
-}
-
 unsigned short int get_port_from_options(int argc,char **argv) {
 	int option_index = 0;
 	unsigned short int port;
@@ -151,7 +145,7 @@ Port* create_and_init_port( int num, int type, int nVlan) {
 	}
 	p->num = num;
 	p->type = type;
-	p->nVlan = nVlan;								
+	p->vlan = nVlan;								
 	p->rcv_size = 0; 							 
 	p->snd_size = 0;
 	

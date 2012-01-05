@@ -44,7 +44,7 @@ typedef struct {
 	int etat;								// Etat du port
 	int type;								// Type du port
 	EthernetAddress ethernet_addr_list[NBR_MAX_ETHERNET_ADDR];
-	int nVlan;								// Numéro de VLAN
+	int vlan;								// Numéro de VLAN
 	Connection_descriptors dc; 				// descripteurs de connexion
 	int rcv_size; 							// Taille des données reçues 
 	int snd_size;							// Taille des données envoyées 

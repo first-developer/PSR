@@ -4,13 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stddef.h>
-#include <fcntl.h>
-#include <signal.h>
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <netdb.h>
-#include <string.h>
 #include <pthread.h>
 
 #include "libthrd.h"
@@ -18,14 +12,27 @@
 
 //  Structures
 // ------------
+
 typedef struct  {
   void (*fn)(int);
   int param;
 } Thread_param;
 
 
+// Variables globales
+// ------------------
+
+pthread_mutex_t mutex_client = PTHREAD_MUTEX_INITIALIZER;
+
+
 // Fonctions
 // ----------
+
+// Cancel : perror suivi d'un exit 
+void cancel( char* msg) {
+  perror(msg);
+  exit(-1);
+}
 
 // Thread_handler: 
 void * thread_handler(void *arg) {
@@ -61,3 +68,12 @@ int lanceThread(void (*fn)(int), int fn_param) {
 	return statut;
 }
 
+// primitives de gestion des semaphores
+
+void P(int S) {
+  pthread_mutex_lock(& mutex_client);
+}
+
+void V(int S) {
+  pthread_mutex_unlock(& mutex_client); 
+}
