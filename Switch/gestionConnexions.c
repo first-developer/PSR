@@ -23,6 +23,7 @@
 #include "libnet.h"
 #include "libthrd.h"
 #include "gestionConnexions.h"
+#include "logger.h"
 
 
 /** Constantes **/
@@ -34,45 +35,26 @@
 #define 	SERVER_LOCAL_PORT 	5000
 #define 	SERVER_LOCAL_IP   	"127.0.0.1"
 
-// COLORS FOR DEBUG
-// ----------------
-#define BLACK   "\033[0;30m"
-#define BLUE    "\033[0;34m"
-#define GREEN   "\033[0;32m"
-#define RED     "\033[0;31m"
-#define MAGENTA "\033[0;35m"
-#define BBLACK   "\033[1;30m"
-#define BBLUE    "\033[1;34m"
-#define BGREEN   "\033[1;32m"
-#define BRED     "\033[1;31m"
-#define BMAGENTA "\033[1;35m"
-/** Variables externes **/
 
-
-
+// Functions 
+// ----------
 
 void handle_connection (int connected_socket) {  // côté client
 	char buffer[MAX_SIZE];
 	FILE* connected_socket_file;
 
 	// Affichage des infos de l'initiateur de la socket de connection
-#ifdef DEBUG
-	fprintf(stdout, "%s<CONNEXION> :  %s\n", BGREEN,BLACK);
+	log_ok(("CONNEXION"))
 	fprintf(stdout,	"  %slocale   %s", BMAGENTA, BLACK);
 	displaySocketAddress(stdout, connected_socket);
-#endif
-
 
 	// traitement de la socket de dialogue sous forme de fichier
 	connected_socket_file = fdopen(connected_socket, "w+");
 	if ( connected_socket_file < 0 ) {
-#ifdef DEBUG
-		perror("traitement.fdopen");
-#endif
+		err_log(("traitement.fdopen"))
 		exit(1);
 	}
 
-#ifdef DEBUG
 	// Affichage des infos du client sur la machine local
 	fprintf(stdout, "  %sdistante%s ", BMAGENTA, BLACK);
 	displayClientAddress(stdout, connected_socket);
@@ -80,7 +62,7 @@ void handle_connection (int connected_socket) {  // côté client
 	// Affichage des infos du client sur la machine distante
 	fprintf(connected_socket_file, "%sCLIENT %s ", BRED, BLACK);
 	displayClientAddress(connected_socket_file, connected_socket);  // Affichage sur la machine distante
-#endif
+	
 
 	fflush(connected_socket_file);  // clean buffer
 	while (fgets(buffer, BUFFER_SIZE, connected_socket_file )>0) {
@@ -88,7 +70,8 @@ void handle_connection (int connected_socket) {  // côté client
 		fprintf(connected_socket_file, "    %s>> %s%s\n", BBLACK, buffer, BLACK);
 		break;
 	}
-	fprintf(stdout, "%s</DECONNEXION> %s\n", BGREEN,BLACK);
+	log_ok(("DECONNEXION"))
+	end_log()
 	fclose(connected_socket_file);
 }
 

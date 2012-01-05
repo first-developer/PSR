@@ -38,6 +38,7 @@
 #define BYELLOW  "\033[1;33m"
 #define BRED     "\033[1;31m"  
 #define BMAGENTA "\033[1;35m"  
+#define LOG_OK_COLOR "\033[1;42;37m"
 #define LOG_HELP_COLOR "\033[1;43;37m"
 #define START_LOG_COLOR "\033[1;45;37m"
 #define START_ERRLOG_COLOR "\033[1;41;37m"
@@ -61,6 +62,7 @@
 	#define end_log() 				fprintf(stderr, "\n%s", END_LOG_COLOR);
 	#define start_help(msg) 		log_title(("HELP"), (LOG_HELP_COLOR)) log_ct(msg)
 	#define help(msg) 				log_title(("HELP"), (LOG_HELP_COLOR)) log_ct(msg) end_log()
+	#define log_ok(msg)				log_title((msg), (LOG_OK_COLOR)) end_log()
 #else 
 	#define log(msg)
 	#define help(msg)
@@ -68,6 +70,7 @@
 	#define start_help(msg)
 	#define start_log(msg)
 	#define end_log() 
+	#define log_ok(msg)
 #endif
 
 // Functions

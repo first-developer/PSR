@@ -31,36 +31,27 @@
 
 #include "gestionConnexions.h"
 #include "libnet.h"
+#include "logger.h"
 
 
-/**** Constantes ****/
+// Constants
+// ---------
 
 #define 	TAP_PRINCIPAL	"/dev/net/tun"
 #define 	BUFFER_SIZE		256
 #define 	h_addr 			h_addr_list[0]
 
-
-// COLORS FOR DEBUG
-// ----------------
-#define BLACK   "\033[0;30m"
-#define BLUE    "\033[0;34m"
-#define GREEN   "\033[0;32m"
-#define RED     "\033[0;31m"
-#define MAGENTA "\033[0;35m"
-#define BBLACK   "\033[1;30m"
-#define BBLUE    "\033[1;34m"
-#define BGREEN   "\033[1;32m"
-#define BRED     "\033[1;31m"
-#define BMAGENTA "\033[1;35m"
-
-
 // parametres serveur
 #define SERVER_LOCAL_PORT 5000
 #define SERVER_LOCAL_IP   "127.0.0.1"
 
-/**** Variables globales *****/
 
-/**** Fonctions de gestion des sockets ****/
+// Global variables 
+// -----------------
+
+
+// Fonctions de gestion des sockets 
+// -------------------------------------
 
 #ifdef DEBUG
 /** Impression d'une adresse generale **/
@@ -124,7 +115,7 @@ void displaySocketAddress(  FILE* output, int socket) {
 	socket_size = sizeof(address);
 
 	if (getsockname(socket, (struct sockaddr *)&address, &socket_size)) {
-		perror("displaySocketAddress.getsocketname");
+		err_log(("displaySocketAddress.getsocketname"))
 		exit(1);
 	}
 
@@ -145,7 +136,7 @@ void displayClientAddress( FILE* output, int socket) {
 	if (getpeername(socket, (struct sockaddr*) &address, &socket_size) < 0)
 	{
 #ifdef DEBUG
-		perror("displayClientAddress.getpeername");
+		err_log(("displayClientAddress.getpeername"))
 #endif
 		exit(1);
 	}
@@ -172,7 +163,7 @@ int socketVersNom(int ds,char *nom)
 	if (getpeername(ds, (struct sockaddr*) &socket_address, &socket_size) < 0)
 	{
 #ifdef DEBUG
-		perror("socketVersNom.getpeername");
+		err_log(("socketVersNom.getpeername"))
 #endif
 		return -1;
 	}
