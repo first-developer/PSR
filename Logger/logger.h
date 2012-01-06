@@ -52,6 +52,8 @@
 // Macros
 // ------
 
+
+
 #ifdef DEBUG
 	#define log_title(msg,color) 	fprintf(stderr,"%s %s %s ", color, msg, CT_LOG_COLOR);
 	#define log_ct(msg) 			fprintf(stderr,"%s %s\n", msg, END_LOG_COLOR);
@@ -63,7 +65,9 @@
 	#define start_help(msg) 		log_title(("HELP"), (LOG_HELP_COLOR)) log_ct(msg)
 	#define help(msg) 				log_title(("HELP"), (LOG_HELP_COLOR)) log_ct(msg) end_log()
 	#define log_ok(msg)				log_title((msg), (LOG_OK_COLOR)) end_log()
+	#define print_newline()			printf("\n");
 #else 
+	#define print_newline()
 	#define log(msg)
 	#define help(msg)
 	#define err_log(msg)

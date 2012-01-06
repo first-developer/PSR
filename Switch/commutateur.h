@@ -5,6 +5,9 @@
 /* commutateur                                     */
 /***************************************************/
 
+#ifndef COMMUTATEUR_HEADER
+#define COMMUTATEUR_HEADER
+
 // Inclusions
 // -----------
 
@@ -68,6 +71,8 @@ typedef struct {
 // variables publiques  
 // -------------------
 
+static Commutator mainCommutator;
+
 // Prototypes de fonctions 
 // -----------------------
 
@@ -79,11 +84,11 @@ PortList* create_port_list();
 Commutator* create_commutator();
 void add_port_to_commutator(Port* p, Commutator c);
 void add_admins_to_commutator(Admin* a, Commutator c);
-
 void *mortdefils (int sig);
 void cancel(char*);
 void init_and_loop_server(int , char**);
 unsigned short int get_port_from_options(int ,char **);
+void set_port_vlan(Port*p , int nVLAN);
 
 
-
+#endif
