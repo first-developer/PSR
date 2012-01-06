@@ -22,8 +22,8 @@
 #include "libthrd.h"
 #include "gestionConnexions.h"
 #include "libipc.h"
-#include "commutateur.h"
 #include "gestionAdmin.h"
+#include "commutateur.h"
 #include "logger.h"
 
 // Constants
@@ -39,7 +39,7 @@
 Admin* create_admin( int AdminRequestKey) {
 	Admin* admin = (Admin*)malloc(sizeof(Admin));
 	if (admin == NULL) {
-		err_log("create_admin.malloc");
+		err_log(("create_admin.malloc"))
 		exit(EXIT_FAILURE);
 	}
 	admin->key = AdminRequestKey;
@@ -50,7 +50,7 @@ Admin* create_admin( int AdminRequestKey) {
 AdminList* create_admin_list() {
 	AdminList* AL = (AdminList*)malloc(sizeof(AdminList));
 	if (AL == NULL) {
-		err_log("create_admin_list.malloc");
+		err_log(("create_admin_list.malloc"))
 		exit(EXIT_FAILURE);
 	}
 	return AL;

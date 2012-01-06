@@ -17,11 +17,11 @@
 // Structures 
 // ----------
 
-typedef struct {
+typedef struct Admin{
 	int key;  // IPC key for requesting
 } Admin;
 
-typedef struct {
+typedef struct AdminList{
 	Admin list[NBR_MAX_ADMIN];
 } AdminList;
 

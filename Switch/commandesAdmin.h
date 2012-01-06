@@ -10,7 +10,6 @@
 
 // Inclusions
 // ----------
-#include "commutateur.h"
 
 // Constants
 // ----------
@@ -27,6 +26,7 @@
 #define SNIFFER_PORT_CMD			"sniffer"
 #define STOP_CMD					"stoper"
 
+#define NO_CMD_ID 						-1
 #define LIST_PORT_CMD_ID				100
 #define SHOW_PORT_INFOS_CMD_ID			101 
 #define LIST_PORT_ADDRESSES_CMD_ID		102 
@@ -114,7 +114,7 @@
 // getInfosFromArgs();
 void process_request ( char* request, int adminKey);
 void scan_command_name_and_params_from_request( int* cmd_id, char* params, char* request);
-void show_port_infos( char** args, int adminKey );
+void show_port_infos( char* params, Commutator * c);
 void list_port_addresses( char** args, int adminKey );
 void list_port_on_commutator_with_status ( Commutator *);
 //void connect_port_to_virtual_interface ( char** args, int adminKey);

@@ -20,13 +20,13 @@
 #include <string.h>
 #include <getopt.h>
 
-
+#include "logger.h"
 #include "libnet.h"
 #include "libthrd.h"
 #include "gestionConnexions.h"
 #include "gestionAdmin.h"
 #include "commutateur.h"
-#include "logger.h"
+
 
 // Constants
 // ----------
@@ -152,7 +152,7 @@ Port* create_port( int num, int type, int nVlan) {
 PortList* create_port_list() {
 	PortList* pl = (PortList*)malloc(sizeof(PortList));
 	if (pl == NULL) {
-		err_log("create_and_init_port.malloc");
+		err_log(("create_and_init_port.malloc"))
 		exit(EXIT_FAILURE);
 	}
 	return pl;
@@ -164,7 +164,6 @@ PortList* create_port_list() {
 // Procedure principale
 // --------------------
 int main(int argc,char **argv) {
-
 	init_and_loop_server(argc, argv);
 	return 0;
 }

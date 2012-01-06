@@ -23,7 +23,8 @@
 // Constants
 // ----------
 
-
+#define	YES		"oui"
+#define	NO 		"non"
 
 // colors
 #define BLACK   "\033[0;30m"

@@ -35,7 +35,12 @@ void process_request ( char* request, int adminKey) {
 	int cmd_id;
 	char params[REQUEST_SIZE];
 
-	scan_command_name_and_params_from_request (&cmd_id, params, request);
+	// on recpere l' id de la cmd in fonction de la requete faite
+	scan_command_name_and_params_from_request (&cmd_id, params, request) ;
+	if  (cmd_id == NO_CMD_ID) {
+		err_log("process_request.scan_command_name_and_params_from_request")
+		exit(EXIT_FAILURE);
+	};
 
 	switch(cmd_id) {
 		case LIST_PORT_CMD_ID:
@@ -43,6 +48,7 @@ void process_request ( char* request, int adminKey) {
 			list_port_on_commutator_with_status (&mainCommutator);		
 			break;
 		case SHOW_PORT_INFOS_CMD_ID:
+			show_port_infos(params, &mainCommutator);
 			break;
 		case LIST_PORT_ADDRESSES_CMD_ID:
 			break;
@@ -71,7 +77,7 @@ void process_request ( char* request, int adminKey) {
 	}
 }
 
-// scan_command_name_and_params_from_request: just to get cmd name and params from the request
+// scan_command_name_and_params_from_request: attribut un id de cmd et recupere les params liés
 void scan_command_name_and_params_from_request( int* cmd_id, char* params, char* request) {
 	char cmd[REQUEST_SIZE];
 
@@ -80,7 +86,18 @@ void scan_command_name_and_params_from_request( int* cmd_id, char* params, char*
 		exit(EXIT_FAILURE);
 	}
 
-	if (!strcmp (cmd, LIST_PORT_CMD)) {}
+	if (!strcmp (cmd, LIST_PORT_CMD 		  	  )) { *cmd_id = LIST_PORT_CMD_ID; 			}
+	else if (!strcmp (cmd, SHOW_PORT_INFOS_CMD	  )) { *cmd_id = SHOW_PORT_INFOS_CMD_ID;	}													
+	else if (!strcmp (cmd, LIST_PORT_ADDRESSES_CMD)) { *cmd_id = LIST_PORT_ADDRESSES_CMD_ID;}												
+	else if (!strcmp (cmd, TAP_CONNECTION_CMD	  )) { *cmd_id = TAP_CONNECTION_CMD_ID;		}											
+	else if (!strcmp (cmd, TCP_CONNECTION_CMD	  )) { *cmd_id = TCP_CONNECTION_CMD_ID;		}													
+	else if (!strcmp (cmd, SET_PORT_VLAN_CMD	  )) { *cmd_id = SET_PORT_VLAN_CMD_ID;		}												
+	else if (!strcmp (cmd, DISCONNECT_PORT_CMD	  )) { *cmd_id = DISCONNECT_PORT_CMD_ID;	}										
+	else if (!strcmp (cmd, SHOW_PORT_STAT_CMD	  )) { *cmd_id = SHOW_PORT_STAT_CMD_ID;		}													
+	else if (!strcmp (cmd, TRIGGER_EVENTS_CMD	  )) { *cmd_id = TRIGGER_EVENTS_CMD_ID;		}										
+	else if (!strcmp (cmd, SNIFFER_PORT_CMD		  )) { *cmd_id = SNIFFER_PORT_CMD_ID;		}												
+	else if (!strcmp (cmd, STOP_CMD				  )) { *cmd_id = STOP_CMD_ID;				}
+	else { *cmd_id = NO_CMD_ID;};										
 }
 
 // display_command_list : affiche les commandes disponibles
@@ -92,4 +109,19 @@ void display_command_list( FILE* output) {
 //list_port_on_commutator_with_status: liste les port sur un commutateur
 void list_port_on_commutator_with_status( Commutator * c) {
 	
+}
+
+// void show_port_infos( Commutator * );
+void show_port_infos( char* params, Commutator * c) {
+	short int num_port = (short int) atoi(params);
+	PortList port_list = c->ports;
+	Port *port;
+	int i =0;
+	while ( (i<NBR_MAX_PORT) && (&port_list.list[i] != NULL) ) {
+		port = &(port_list.list[i]);
+		if ( port->num == num_port) {
+			display_port_infos(port, stdout)
+			break;
+		}
+	}
 }
