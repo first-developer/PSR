@@ -13,12 +13,13 @@
 
 #define NBR_MAX_ADMIN	5
 
+#define	ADMIN_REQUEST_TYPE		1
 
 // Structures 
 // ----------
 
 typedef struct Admin{
-	int key;  // IPC key for requesting
+	int IPCkey;  // IPC key for requesting
 } Admin;
 
 typedef struct AdminList{
@@ -29,9 +30,9 @@ typedef struct AdminList{
 // Fonctions
 // ---------
 
-
 Admin* create_admin( int AdminRequestKey);
 AdminList* create_admin_list();
+
 
 
 #endif

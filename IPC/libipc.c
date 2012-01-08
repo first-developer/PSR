@@ -14,9 +14,20 @@
 #include "libipc.h"
 
 
-
 // Constants
 // ----------
+
+//int requesterKeys[NBR_MAX_ADMIN];			// tableau stockant les clé admins generées
+int requesterQueueIds[NBR_MAX_ADMIN];		// tableau stockant les id de fle de message 
+											//   	correspond aux clé admins générées
+int responderQueueIds[NBR_MAX_COMMUTATOR];	// tableau stockant les id de fle de message 
+											//   	correspond aux clé de commutateurs
+int current_requester = 0;					// la clé du client admin courant
+int current_responder = 0;					// la clé du commutateur courant
+int reponseQueueID;
+int requestQueueID;			
+int requesterCount = 0;						// compteur global de client admins (requesters)
+
 
 
 // Structures
@@ -32,15 +43,22 @@ typedef struct {
 // ----------
 
 // generate_admin_ICP_key: pour créer un cle IPC pour l'admin
-int generate_ICP_key() {
-	key_t adminKey;
-
-	if ( (adminKey = ftok(IPC_FILE_PATH, IPC_DEFAULT_ID)) == -1) {
-		err_log("generate_admin_ICP_key.ftok")
-		return -1;
+int generate_requester_ICP_key() {
+	if (current_requester == NBR_MAX_ADMIN)  {// atteint le max d'admin
+		err_log("generate_requester_ICP_key: Le max d'admin client est atteint")
+		exit(EXIT_FAILURE);
 	}
-	return (int) adminKey;
+	return current_requester++;
+}
 
+
+// generate_commmutateur_ICP_key: pour créer un cle IPC pour le commutateur
+int generate_responder_ICP_key() {
+	if (current_responder == NBR_MAX_COMMUTATOR)  {// atteint le max d'admin
+		err_log("generate_responder_ICP_key: Le max de commutateur est atteint")
+		exit(EXIT_FAILURE);
+	}
+	return current_responder++;
 }
 
 
@@ -56,61 +74,101 @@ int create_IPC_message_queue(int ICP_key) {
 	return mqueue_id;
 }
 
-// send_message: envoyer des messages envoyés par 'type' 
-void IPC_send_message( int ICP_key, int IPC_type, char* data  ) {
+
+// generate_reponse_queue_id: crée l'id 
+//		de la file de message reponse et renvoie cet id (mqueue_id).
+int generate_reponse_queue_id() {
+	key_t requesterKey;
+	int mqueueID;
+	// on recupere la clé du client courant créé par 'generate_requester_ICP_key'
+	requesterKey = current_requester;
+
+	mqueueID = create_IPC_message_queue(requesterKey);
+	// Ajoute l'id de la file de reponse du client crée
+	requesterQueueIds[current_requester] = mqueueID;
+
+	return mqueueID;
+}
+
+
+// generate_request_queue_id: crée la clé et l'id 
+//		de la file de message requête et renvoie cet id (mqueue_id).
+int generate_request_queue_id() {
+	key_t responderKey;
+	// on recupere la clé du commutateur courant créé par 'generate_responder_ICP_key'
+	responderKey = current_responder;
+
+	int mqueueID = create_IPC_message_queue(responderKey);
+	// Ajoute l'id de la file de reponse du client crée
+	responderQueueIds[current_responder] = mqueueID;
+	return mqueueID;
+}
+
+
+// destroy_IPC_message_queue: pour spprime une file de message
+void destroy_IPC_message_queue(int mqueueID) {
+	int status;  
+
+	// On tente de détruire la file de message 
+	status = msgctl(mqueueID, IPC_RMID, NULL);
+
+	if ( status == -1 ){
+		err_log("destroy_IPC_message_queue.msgctl")
+		exit(EXIT_FAILURE);
+	}
+}
+
+
+// IPC_send_message: envoyer des messages envoyés par 'type' 
+void IPC_send_message( int mqueueID, int IPC_type, char* data_snd  ) {
 	IPC_message IPC_msg;
-	int mqueue_id;
 
-	// on verifie que le type est valide 
-	if (IPC_type <= 0 ) {
-		log("IPC_send_message : invalide type")
-		exit(EXIT_FAILURE);
-	}
-
-	// creation de l' id de la file de message
-	if ( (mqueue_id = create_IPC_message_queue(ICP_key)) == -1) {
-		err_log("IPC_send_message.create_IPC_message_queue")
-		exit(EXIT_FAILURE);
-	}
-
-	// initialisation des donnees du message 
-	strcpy(IPC_msg.data, data);
+	// Initialisation des donnees du message 
+	strcpy(IPC_msg.data, data_snd);
 	IPC_msg.type = IPC_type;
 
 	// Envoie du message 
-	if ( msgsnd(mqueue_id, (void *)&IPC_msg, IPC_MESSAGE_SIZE, 0) < 0 ) {
+	if ( msgsnd(mqueueID, (void *)&IPC_msg, IPC_MESSAGE_SIZE, 0) < 0 ) {
 		err_log("send_message.msgsnd")
 		exit(EXIT_FAILURE);
 	}
 }
 
 
-// receive_message: recuperer les messages envoyés par 'type' 
-void IPC_receive_message( int ICP_key, int IPC_type, char* data  ) {
+// IPC_receive_message: recuperer les messages envoyés par 'type' 
+void IPC_receive_message( int mqueueID, int IPC_type, char* data_rcv  ) {
 	IPC_message IPC_msg;
-	int mqueue_id; // identifiant de la file de message 
-
-	// on verifie que le type est valide 
-	if (IPC_type <= 0 ) {
-		log("IPC_receive_message : invalide type")
-		exit(EXIT_FAILURE);		
-	}
-
-	// initialisation des donnees du message 
-	strcpy(IPC_msg.data, data);
-	// IPC_msg.data[IPC_MESSAGE_SIZE] = '\0';
-	IPC_msg.type = IPC_type;
-
-	// creation de l' id de la file de message
-	if ( (mqueue_id = create_IPC_message_queue(ICP_key)) == -1) {
-		err_log("IPC_send_message.create_IPC_message_queue")
-		exit(EXIT_FAILURE);
-	}
-
-	// Envoie du message 
-	if ( msgrcv(mqueue_id, (void *)& IPC_msg, IPC_MESSAGE_SIZE, IPC_type, 0) < 0 ) {
+	
+	// reception du message du message 
+	if ( msgrcv(mqueueID, (void *)& IPC_msg, IPC_MESSAGE_SIZE, IPC_type, 0) < 0 ) {
 		err_log("IPC_receive_message.msgsnd")
 		exit(EXIT_FAILURE);
 	}	
+
+	// On met la reponse dans la variable 'data_rcv'
+	data_rcv = IPC_msg.data;
 }
 	
+
+// destroy_response_queue_id: pour créer la file de message reponse
+void destroy_response_queue_id(int mqueueID) {
+	// On tente de détruire la file de message reponse
+	destroy_IPC_message_queue(mqueueID);
+	// TODO: Uitliser une boucle pour etre sûr de supprimer le bon mqueueID
+	// On vide le contenu du client admin courant dans le tableau 'requesterQueueIds'  
+	requesterQueueIds[current_requester] = NO_MQUEUE_ID;
+	current_requester--;
+	// TODO : verifier que 'current_requester' est bien nul à la fin.
+}
+
+
+// destroy_request_queue_id: pour créer la file de message reponse
+void destroy_request_queue_id(int mqueueID) {
+	// On tente de détruire la file de message reponse
+	destroy_IPC_message_queue(mqueueID);
+	// TODO: Uitliser une boucle pour etre sûr de supprimer le bon mqueueID
+	// On vide le contenu du commutateur courant dans le tableau 'responderQueueIds'  
+	responderQueueIds[current_responder] = NO_MQUEUE_ID;
+	current_responder--;
+	// TODO : verifier que 'current_responder' est bien nul à la fin.
+}

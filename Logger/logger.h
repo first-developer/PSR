@@ -56,17 +56,18 @@
 
 
 #ifdef DEBUG
+	#define print_newline()			printf("\n");
 	#define log_title(msg,color) 	fprintf(stderr,"%s %s %s ", color, msg, CT_LOG_COLOR);
 	#define log_ct(msg) 			fprintf(stderr,"%s %s\n", msg, END_LOG_COLOR);
 	#define err_log_ct(msg) 		fprintf(stderr,"%s %s %s\n ", msg, strerror(errno), END_LOG_COLOR);
 	#define start_log(msg) 			log_title(("LOGGER"), (START_LOG_COLOR)) log_ct(msg)
 	#define log(msg) 				start_log(msg) end_log()
 	#define err_log(msg) 			log_title(("ERROR"), (START_ERRLOG_COLOR)) err_log_ct(msg) end_log()
-	#define end_log() 				fprintf(stderr, "\n%s", END_LOG_COLOR);
+	#define end_log() 				fprintf(stderr, "%s", END_LOG_COLOR);print_newline()
 	#define start_help(msg) 		log_title(("HELP"), (LOG_HELP_COLOR)) log_ct(msg)
 	#define help(msg) 				log_title(("HELP"), (LOG_HELP_COLOR)) log_ct(msg) end_log()
 	#define log_ok(msg)				log_title((msg), (LOG_OK_COLOR)) end_log()
-	#define print_newline()			printf("\n");
+	
 #else 
 	#define print_newline()
 	#define log(msg)

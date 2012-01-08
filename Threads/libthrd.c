@@ -8,7 +8,7 @@
 #include <pthread.h>
 
 #include "libthrd.h"
-
+#include "logger.h"
 
 //  Structures
 // ------------
@@ -48,7 +48,7 @@ void * thread_handler(void *arg) {
 
 
 // lanceThread: return 0 if successully done and a number != 0 if not
-int lanceThread(void (*fn)(int), int fn_param) {
+void lanceThread(void (*fn)(int), int fn_param) {
 	int statut;
 	pthread_t _thread;
   
@@ -61,11 +61,18 @@ int lanceThread(void (*fn)(int), int fn_param) {
 
 	// on crée le thread associé au port
 	statut = pthread_create(&_thread, NULL, (void *)thread_handler, (void*)thd_param);
-	if (statut != 0) {
-		cancel("lanceThread.pthread_create");
+	if (statut == -1) {
+		err_log(("lanceThread.pthread_create"))
+    exit(EXIT_FAILURE);
 	}
+
+  // on détache le thread
 	statut = pthread_detach(_thread);
-	return statut;
+  if (statut == -1) {
+    err_log(("lanceThread.pthread_detach"))
+    exit(EXIT_FAILURE);
+  }
+
 }
 
 // primitives de gestion des semaphores

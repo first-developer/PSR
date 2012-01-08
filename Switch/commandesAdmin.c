@@ -44,11 +44,11 @@ void process_request ( char* request, int adminKey) {
 
 	switch(cmd_id) {
 		case LIST_PORT_CMD_ID:
-			// mainCommutator expected to be declare before this call
-			list_port_on_commutator_with_status (&mainCommutator);		
+			// le commutateur est censé être initialisé
+			list_port_on_commutator_with_status (&commutateur);		
 			break;
 		case SHOW_PORT_INFOS_CMD_ID:
-			show_port_infos(params, &mainCommutator);
+			show_port_infos(params, &commutateur);
 			break;
 		case LIST_PORT_ADDRESSES_CMD_ID:
 			break;
@@ -116,12 +116,18 @@ void show_port_infos( char* params, Commutator * c) {
 	short int num_port = (short int) atoi(params);
 	PortList port_list = c->ports;
 	Port *port;
-	int i =0;
-	while ( (i<NBR_MAX_PORT) && (&port_list.list[i] != NULL) ) {
+	int i;
+	for (i=0; i<NBR_MAX_PORT; i++) /*&& (&port_list.list[i] != NULL*/ {
 		port = &(port_list.list[i]);
 		if ( port->num == num_port) {
 			display_port_infos(port, stdout)
 			break;
 		}
 	}
+}
+
+
+// list_port_addresses: liste les adresses d'un port
+void list_port_addresses( char* params, Commutator * c) {
+	
 }

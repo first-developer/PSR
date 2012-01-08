@@ -6,4 +6,4 @@
 /** prototype des fonctions publiques **/
 
 void handle_connection (int connected_socket);
-void handle_thread_by_port( int contact_socket);
+void process_slight_activity_for( int contact_socket);

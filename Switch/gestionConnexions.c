@@ -75,7 +75,9 @@ void handle_connection (int connected_socket) {  // côté client
 	fclose(connected_socket_file);
 }
 
-void handle_thread_by_port( int contact_socket) {
+
+// process_activity_for: lance un processus leger pur effectuer un traitement
+void process_slight_activity_for( int contact_socket) {
   lanceThread(handle_connection, contact_socket);
 }
 

@@ -8,7 +8,7 @@
 export CC = gcc
 export LD = gcc
 export CLIB = ar cq -lpthread
-export CFLAGS = -g -Wall -DDEBUG
+export CFLAGS = -g -Wall -DDEBUG -I ../Logger
 
 OBJS = libthrd.o
 

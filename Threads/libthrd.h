@@ -14,7 +14,7 @@
 
 void cancel( char* msg);
 void* thread_handler(void *arg);
-int lanceThread(void (*fn) (int), int);
+void lanceThread(void (*fn) (int), int);
 void P(int);
 void V(int);
 

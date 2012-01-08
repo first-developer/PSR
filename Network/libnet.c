@@ -330,7 +330,6 @@ int boucleServeur(int contact_socket, void (*traitement)(int))
 	struct sockaddr_in client_socket_addr;
 	socklen_t socket_size = sizeof(client_socket_addr);
 	int connected_socket;  // Socket de dialogue
-	int child;
 
 	while(1) {
 		// Attente d'une connexion client
@@ -343,21 +342,7 @@ int boucleServeur(int contact_socket, void (*traitement)(int))
 		}
 
 		// Gestion de multi-connection
-    
-		switch(child = fork()) {
-			case -1: // erreur lors de la création du fils
-				perror("boucleServeur.fork: erreur de creation du fils.\n");
-				return -1;
-				break;
-			case 0 : // fils: il doit déterminer l'adresse de son correspond
-				close(contact_socket);
-				handle_connection(connected_socket);
-				return 0;
-				break;
-			case 1 : // le pere: il ferme la socket de dialogue
-				close(connected_socket);
-				break;
-		}
+    	traitement (connected_socket);
 	}
 	return 0;
 }

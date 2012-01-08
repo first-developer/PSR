@@ -1,5 +1,10 @@
-// Inclusions
-// ----------
+/** fichier commutateur.c **/
+
+/******************************************************************/
+/** Commutateur virtuel pour etablir des VPN                     **/
+/******************************************************************/
+
+/** Fichiers d'inclusion **/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,21 +19,10 @@
 #include <string.h>
 #include <getopt.h>
 
-
-#include "logger.h"
-#include "libnet.h"
-#include "libipc.h"
-#include "libthrd.h"
-#include "gestionConnexions.h"
-#include "gestionAdmin.h"
+#include "../Network/libnet.c"
 #include "commutateur.h"
+#include "../Logger/logger.h"
 #include "commandesAdmin.h"
-#include "adminFactory.h"
-
-
-
-// Constants
-// ----------
 
 #define TAP_PRINCIPAL	"/dev/net/tun"
 #define BUFFER_SIZE		256
@@ -38,34 +32,16 @@
 #define SERVER_IP_ADDR  "127.0.0.1"
 #define SERVER_PORT     5000
 
-
-// variables
-// ---------
-
-
-// Structures
-// ----------
-
-
-// Macros
-// ------
-
-
-
-// Functions
-// ---------
-
-
-
-
-// Principale
-// ----------
+/** Procedure principale **/
 
 int main(int argc,char **argv) {
 
+	struct sockaddr_in adresse; 	/* Adresse du serveur distant */
+	char 	statut;   				/* Stocke le statut des primitives */
 	int 	connected_socket;    	/* Descripteur de la SOCKET renvoyer par le serveur */
+	char 	buffer[BUFFER_SIZE];
 	FILE* 	connected_socket_file;
-	char 	request[REQUEST_SIZE];
+	char* 	request[REQUEST_SIZE];
 
 	// Connection au serveur
 	connected_socket=connexionServeur(SERVER_IP_ADDR, SERVER_PORT);
@@ -80,19 +56,13 @@ int main(int argc,char **argv) {
 	}
 
 	// Start requesting the server side
-
-	// Création de la file de message reponse côté client
-	int reponseQueueID = generate_requester_ICP_key();
-	
 	while (1) {
 		scanf("%s", request);
 
 		if (!strcmp(request, "stop")) { // si on veut arrete
 			break;
 		}
-		IPC_send_message( reponseQueueID, ADMIN_REQUEST_TYPE, request );
 	}
-	
 	fprintf(connected_socket_file, "lport\n");
 	fprintf(connected_socket_file, "dport\n");
 

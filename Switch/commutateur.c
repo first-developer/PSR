@@ -45,7 +45,7 @@
 
 // Static variables 
 // -----------------
-
+	int commutatorIPCKey;	// clé IPC duc commmutateur
 
 // Helper functions 
 // ----------------
@@ -85,7 +85,7 @@ unsigned short int get_port_from_options(int argc,char **argv) {
 
 // init_and_loop_server: 	intialise la socket de connexion du serveur
 //							et effectue boucle de connexion	pour les clients
-void init_and_loop_server(int argc, char**argv) {
+void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	short int port;
 	int contact_socket; // socket sur laquelle contacter le serveur
 
@@ -97,8 +97,7 @@ void init_and_loop_server(int argc, char**argv) {
 	// récuperation du descripteur de la socket serveur
 	contact_socket = initialisationServeur(&port , MAX_CONNEXIONS);
 	if ( contact_socket < 0 ) {
-		err_log(("Main.initialisationServeur: la recupération du descripteur de la socket\
-	             liée au serveur a échoué sur "))
+		err_log(("Main.initialisationServeur"))
 		exit(EXIT_FAILURE);
 	}
 	
@@ -108,40 +107,57 @@ void init_and_loop_server(int argc, char**argv) {
 	displaySocketAddress(stdout, contact_socket);
 	end_log()
 
+	// Creation du commutateur  
+	log((" Creation du commutateur"))
+	create_and_init_commutator();
+
+	// initialisation des ports du commutateur et affcihage
+	init_commutator_ports();
+	start_log("initialisation des ports du commutateur")
+	display_all_commutator_ports();
+
+	// Creation de la clé IPC du commutateur et de la file de message requ$ete  
+	
+
 	// Lancement de la boucle d'écoute
-	if (boucleServeur( contact_socket, handle_thread_by_port) < 0) {
-		err_log("Main.boucleServeur: erreur lors du lancement de l'écoute");
+	if (boucleServeur( contact_socket, process_slight_activity_for) < 0) {
+		err_log("Main.boucleServeur");
 		exit(EXIT_FAILURE);
 	}
 }
 
 
 // Create_and_init_commutator: crée et initialise le commutateur   
-Commutator* create_commutator() {
-	Commutator * commutateur = (Commutator *) malloc(sizeof(Commutator));
-	if (commutateur == NULL) {
-		err_log(("create_and_init_commutator.malloc"))
-		exit(EXIT_FAILURE);
-	}
+void create_and_init_commutator() {
+	// Commutator * commutateur = (Commutator *) malloc(sizeof(Commutator));
+	// if (commutateur == NULL) {
+	// 	err_log(("create_and_init_commutator.malloc"))
+	// 	exit(EXIT_FAILURE);
+	// }
+
+	// On crée la list des admin et des ports
 	AdminList *AL = create_admin_list();
 	PortList  *PL = create_port_list();
 
-	commutateur->admins = *AL;
-	commutateur->ports  = *PL;
-
-	return commutateur;
+	commutateur.admins = *AL;
+	commutateur.ports  = *PL;
 }
 
 // create_and_init_port: crée et initialise le port
-Port* create_port( int num, int type, int nVlan) {
+Port* create_and_init_port( int num) {
 	Port* p = (Port*)malloc(sizeof(Port));
 	if (p == NULL) {
 		err_log(("create_and_init_port.malloc"))
 		exit(EXIT_FAILURE);
 	}
-	p->num = num;
-	p->type = type;
-	p->vlan = nVlan;								
+
+	// On donne les attributs par defaut
+	p->num 		= num;
+	p->type 	= NO_PORT_TYPE;
+	p->state 	= 0;
+	p->vlan 	= 0;	
+	p->IEV_fd 	= 0;	
+	p->socket_fd= 0;							
 	p->rcv_size = 0; 							 
 	p->snd_size = 0;
 	
@@ -158,12 +174,31 @@ PortList* create_port_list() {
 	return pl;
 }
 
+// init_commutator_ports: initialise les ports du commutateur
+void init_commutator_ports () {
+	PortList * ports = &(commutateur.ports);
+	int i;
 
+	for (i=0; i<NBR_MAX_PORT;i++) {
+		ports->list[i] = (Port)*(create_and_init_port(i));
+	} 
+}
+
+// void display_all_commutator_ports: affiche tous les ports du comutateur et leurs détails 
+void display_all_commutator_ports() {
+	PortList  ports = commutateur.ports;
+	int i;
+	Port* port;
+	for (i=0; i<NBR_MAX_PORT;i++) {
+		port = &((ports.list)[i]);
+		display_port_infos(port, stderr)
+	} 
+}
 
 
 // Procedure principale
 // --------------------
 int main(int argc,char **argv) {
-	init_and_loop_server(argc, argv);
+	init_commutator_and_listen_to_connections(argc, argv);
 	return 0;
 }

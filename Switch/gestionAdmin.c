@@ -42,7 +42,7 @@ Admin* create_admin( int AdminRequestKey) {
 		err_log(("create_admin.malloc"))
 		exit(EXIT_FAILURE);
 	}
-	admin->key = AdminRequestKey;
+	admin->IPCkey = AdminRequestKey;
 	return admin;	
 }
 

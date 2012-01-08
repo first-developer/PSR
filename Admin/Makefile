@@ -1,32 +1,32 @@
-#
+
 # Makefile pour generer le client d'administration
+
+
+OBJS = adminFactory.o
+
+LOCAL_LIBS = -L ../Network  -L ../Threads -L ../IPC
+LOCAL_LIBS += -lnet  -lthrd -lipc
+CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Logger
+
+#
+# Cible generale
 #
 
-# OBJS = adminFactory.o
+all: adminFactory
 
-# LOCAL_LIBS = -L ../Network  -L ../Threads -L ../IPC
-# LOCAL_LIBS += -lnet  -lthrd -lipc
-# CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Logger
+#
+# La cible de nettoyage
+#
 
-# #
-# # Cible generale
-# #
+clean: 
+	rm -f core *.o commutateur
 
-# all: adminFactory
+#
+# Les cibles pour l'executable
+#
 
-# #
-# # La cible de nettoyage
-# #
+adminFactory: $(OBJS)
+	$(CC) $(CFLAGS) -o adminFactory $(OBJS) $(LOCAL_LIBS)
 
-# clean: 
-# 	rm -f core *.o commutateur
-
-# #
-# # Les cibles pour l'executable
-# #
-
-# adminFactory: $(OBJS)
-# 	$(CC) $(CFLAGS) -o adminFactory $(LOCAL_LIBS)
-
-# adminFactory.o: adminFactory.c adminFactory.h 
-
+adminFactory.o: adminFactory.c adminFactory.h 
+	$(CC) -c $(CFLAGS) $(LOCAL_LIBS) adminFactory.c
