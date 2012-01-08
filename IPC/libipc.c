@@ -81,6 +81,11 @@ int generate_reponse_queue_id() {
 	key_t requesterKey;
 	int mqueueID;
 	// on recupere la clé du client courant créé par 'generate_requester_ICP_key'
+	if (current_requester == 0) {// Aucun client admin 
+		err_log("generate_reponse_queue_id: Aucun client admin ")
+		exit(EXIT_FAILURE);
+	}
+
 	requesterKey = current_requester;
 
 	mqueueID = create_IPC_message_queue(requesterKey);
@@ -96,6 +101,11 @@ int generate_reponse_queue_id() {
 int generate_request_queue_id() {
 	key_t responderKey;
 	// on recupere la clé du commutateur courant créé par 'generate_responder_ICP_key'
+	if (current_responder == 0) {// Aucun commutateur 
+		err_log("generate_request_queue_id: Aucun commutateur ")
+		exit(EXIT_FAILURE);
+	}
+
 	responderKey = current_responder;
 
 	int mqueueID = create_IPC_message_queue(responderKey);

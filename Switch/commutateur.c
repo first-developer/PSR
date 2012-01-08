@@ -22,6 +22,7 @@
 
 #include "logger.h"
 #include "libnet.h"
+#include "libipc.h"
 #include "libthrd.h"
 #include "gestionConnexions.h"
 #include "gestionAdmin.h"
@@ -41,11 +42,12 @@
 
 // Public variables 
 // -----------------
-
+	extern int current_responder;
+	extern int responderQueueIds[NBR_MAX_COMMUTATOR];
 
 // Static variables 
 // -----------------
-	int commutatorIPCKey;	// clé IPC duc commmutateur
+	int requestQueueID;	// id file de la requête 
 
 // Helper functions 
 // ----------------
@@ -116,8 +118,15 @@ void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	start_log("initialisation des ports du commutateur")
 	display_all_commutator_ports();
 
-	// Creation de la clé IPC du commutateur et de la file de message requ$ete  
+	// Creation de l'id  de la file de message requête du commutateur  
+	requestQueueID = generate_reponse_queue_id();
+	start_log(("Affichage des données IPC du commutateur"))
+	printf("Commutateur IPCKey: %d\n", current_responder);
+	printf("QueueID request: %d\n", responderQueueIds[current_responder]);
 	
+	
+
+	//ADMIN_REQUEST_TYPE
 
 	// Lancement de la boucle d'écoute
 	if (boucleServeur( contact_socket, process_slight_activity_for) < 0) {

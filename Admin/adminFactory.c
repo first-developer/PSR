@@ -82,7 +82,7 @@ int main(int argc,char **argv) {
 	// Start requesting the server side
 
 	// Création de la file de message reponse côté client
-	int reponseQueueID = generate_requester_ICP_key();
+	int reponseQueueID = generate_reponse_queue_id();
 	
 	while (1) {
 		scanf("%s", request);
