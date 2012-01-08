@@ -14,17 +14,11 @@
 #include <string.h>
 #include <getopt.h>
 
-
-#include "logger.h"
-#include "libnet.h"
-#include "libipc.h"
-#include "libthrd.h"
-#include "gestionConnexions.h"
 #include "gestionAdmin.h"
+#include "logger.h"
+#include "libipc.h"
 #include "commutateur.h"
-#include "commandesAdmin.h"
 #include "adminFactory.h"
-
 
 
 // Constants
@@ -41,7 +35,7 @@
 
 // variables
 // ---------
-
+	
 
 // Structures
 // ----------
@@ -62,8 +56,8 @@
 // ----------
 
 int main(int argc,char **argv) {
-
-	int 	connected_socket;    	/* Descripteur de la SOCKET renvoyer par le serveur */
+/*
+	int 	connected_socket;    	// Descripteur de la SOCKET renvoyer par le serveur 
 	FILE* 	connected_socket_file;
 	char 	request[REQUEST_SIZE];
 
@@ -78,23 +72,23 @@ int main(int argc,char **argv) {
 		perror("Main.fdopen");
 		exit(-1);
 	}
-
+*/
 	// Start requesting the server side
-
+	char request[IPC_MESSAGE_SIZE];
 	// Création de la file de message reponse côté client
-	int reponseQueueID = generate_reponse_queue_id();
 	
+	printf("QueueIDServer request: %d\n", commutatorRequestQueueID);
 	while (1) {
 		scanf("%s", request);
 
 		if (!strcmp(request, "stop")) { // si on veut arrete
 			break;
 		}
-		IPC_send_message( reponseQueueID, ADMIN_REQUEST_TYPE, request );
+		IPC_send_message( commutatorRequestQueueID, ADMIN_REQUEST_TYPE, request );
 	}
-	
-	fprintf(connected_socket_file, "lport\n");
-	fprintf(connected_socket_file, "dport\n");
+
+	//fprintf(connected_socket_file, "lport\n");
+	//fprintf(connected_socket_file, "dport\n");
 
 	return EXIT_SUCCESS;
 }

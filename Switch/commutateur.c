@@ -40,14 +40,10 @@
 #define 	SERVER_LOCAL_IP   	"127.0.0.1"
 
 
-// Public variables 
+// Variables 
 // -----------------
-	extern int current_responder;
-	extern int responderQueueIds[NBR_MAX_COMMUTATOR];
+Commutator commutateur;  // the main commutator
 
-// Static variables 
-// -----------------
-	int requestQueueID;	// id file de la requête 
 
 // Helper functions 
 // ----------------
@@ -119,10 +115,9 @@ void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	display_all_commutator_ports();
 
 	// Creation de l'id  de la file de message requête du commutateur  
-	requestQueueID = generate_reponse_queue_id();
+	commutatorRequestQueueID = generate_request_queue_id();
 	start_log(("Affichage des données IPC du commutateur"))
-	printf("Commutateur IPCKey: %d\n", current_responder);
-	printf("QueueID request: %d\n", responderQueueIds[current_responder]);
+	printf("CommutatorRequestQueueID: %d\n", commutatorRequestQueueID);
 	
 	
 

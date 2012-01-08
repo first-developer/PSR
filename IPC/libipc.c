@@ -20,14 +20,10 @@
 //int requesterKeys[NBR_MAX_ADMIN];			// tableau stockant les clé admins generées
 int requesterQueueIds[NBR_MAX_ADMIN];		// tableau stockant les id de fle de message 
 											//   	correspond aux clé admins générées
-int responderQueueIds[NBR_MAX_COMMUTATOR];	// tableau stockant les id de fle de message 
-											//   	correspond aux clé de commutateurs
 int current_requester = 0;					// la clé du client admin courant
-int current_responder = 0;					// la clé du commutateur courant
-int reponseQueueID;
-int requestQueueID;			
-int requesterCount = 0;						// compteur global de client admins (requesters)
-
+	
+//int requesterCount = 0;						// compteur global de client admins (requesters)
+int commutatorRequestQueueID;
 
 
 // Structures
@@ -52,14 +48,14 @@ int generate_requester_ICP_key() {
 }
 
 
-// generate_commmutateur_ICP_key: pour créer un cle IPC pour le commutateur
-int generate_responder_ICP_key() {
-	if (current_responder == NBR_MAX_COMMUTATOR)  {// atteint le max d'admin
-		err_log("generate_responder_ICP_key: Le max de commutateur est atteint")
-		exit(EXIT_FAILURE);
-	}
-	return current_responder++;
-}
+// // generate_commmutateur_ICP_key: pour créer un cle IPC pour le commutateur
+// int generate_responder_ICP_key() {
+// 	if (current_responder == NBR_MAX_COMMUTATOR)  {// atteint le max d'admin
+// 		err_log("generate_responder_ICP_key: Le max de commutateur est atteint")
+// 		exit(EXIT_FAILURE);
+// 	}
+// 	return current_responder++;
+//}
 
 
 // create_IPC_message_queue: pour créer une file de message
@@ -81,10 +77,12 @@ int generate_reponse_queue_id() {
 	key_t requesterKey;
 	int mqueueID;
 	// on recupere la clé du client courant créé par 'generate_requester_ICP_key'
-	if (current_requester == 0) {// Aucun client admin 
-		err_log("generate_reponse_queue_id: Aucun client admin ")
-		exit(EXIT_FAILURE);
-	}
+	
+	// TODO: 
+	// if (current_requester == 0) {// Aucun client admin 
+	// 	err_log("generate_reponse_queue_id: Aucun client admin ")
+	// 	exit(EXIT_FAILURE);
+	// }
 
 	requesterKey = current_requester;
 
@@ -99,18 +97,16 @@ int generate_reponse_queue_id() {
 // generate_request_queue_id: crée la clé et l'id 
 //		de la file de message requête et renvoie cet id (mqueue_id).
 int generate_request_queue_id() {
-	key_t responderKey;
 	// on recupere la clé du commutateur courant créé par 'generate_responder_ICP_key'
-	if (current_responder == 0) {// Aucun commutateur 
-		err_log("generate_request_queue_id: Aucun commutateur ")
-		exit(EXIT_FAILURE);
-	}
-
-	responderKey = current_responder;
-
-	int mqueueID = create_IPC_message_queue(responderKey);
-	// Ajoute l'id de la file de reponse du client crée
-	responderQueueIds[current_responder] = mqueueID;
+	// if (current_responder == 0) {// Aucun commutateur 
+	// 	err_log("generate_request_queue_id: Aucun commutateur ")
+	// 	exit(EXIT_FAILURE);
+	// }
+	log("generate_request_queue_id.start")
+	int mqueueID = create_IPC_message_queue(RESPONDER_IPC_KEY);
+	commutatorRequestQueueID = mqueueID;
+	printf("RequestQueueID: %d\n", mqueueID);
+	log("generate_request_queue_id.end")
 	return mqueueID;
 }
 
@@ -174,11 +170,11 @@ void destroy_response_queue_id(int mqueueID) {
 
 // destroy_request_queue_id: pour créer la file de message reponse
 void destroy_request_queue_id(int mqueueID) {
-	// On tente de détruire la file de message reponse
-	destroy_IPC_message_queue(mqueueID);
-	// TODO: Uitliser une boucle pour etre sûr de supprimer le bon mqueueID
-	// On vide le contenu du commutateur courant dans le tableau 'responderQueueIds'  
-	responderQueueIds[current_responder] = NO_MQUEUE_ID;
-	current_responder--;
-	// TODO : verifier que 'current_responder' est bien nul à la fin.
+	// // On tente de détruire la file de message reponse
+	// destroy_IPC_message_queue(mqueueID);
+	// // TODO: Uitliser une boucle pour etre sûr de supprimer le bon mqueueID
+	// // On vide le contenu du commutateur courant dans le tableau 'responderQueueIds'  
+	// responderQueueIds[current_responder] = NO_MQUEUE_ID;
+	// current_responder--;
+	// // TODO : verifier que 'current_responder' est bien nul à la fin.
 }

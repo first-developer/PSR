@@ -10,6 +10,7 @@
 
 // Inclusions
 // -----------
+//	static int CommutatorRequestQueueID;	// id file de la requête 
 
 
 // Constantes 
@@ -106,8 +107,7 @@ typedef struct Commutator{
 
 // variables publiques  
 // -------------------
-	static Commutator commutateur;  // the main commutator
-
+	extern Commutator commutateur;  // the main commutator
 
 // Prototypes de fonctions 
 // -----------------------

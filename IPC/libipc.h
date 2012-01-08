@@ -11,9 +11,16 @@
 #define IPC_DEFAULT_ID		0
 #define NO_MQUEUE_ID		-1
 
+#define RESPONDER_IPC_KEY 		10
+
 #define NBR_MAX_ADMIN		5
 #define NBR_MAX_COMMUTATOR 	5
 
+
+// Variables
+// ---------
+
+ extern int commutatorRequestQueueID;
 
 // Macros
 // ------
