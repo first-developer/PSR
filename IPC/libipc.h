@@ -11,7 +11,8 @@
 #define IPC_DEFAULT_ID		0
 #define NO_MQUEUE_ID		-1
 
-#define RESPONDER_IPC_KEY 		10
+#define RESPONDER_IPC_KEY 		99
+#define PRIVATE_ICP_KEY			88
 
 #define NBR_MAX_ADMIN		5
 #define NBR_MAX_COMMUTATOR 	5
@@ -20,7 +21,7 @@
 // Variables
 // ---------
 
- extern int commutatorRequestQueueID;
+ //extern int commutatorRequestQueueID;
 
 // Macros
 // ------
@@ -29,15 +30,12 @@
 // Prototypes 
 // ----------
 
-int generate_ICP_key();
-void IPC_send_message( int ICP_key, int IPC_type, char* IPC_data  );
-void IPC_receive_message( int ICP_key, int IPC_type, char* IPC_data  );
-int generate_requester_ICP_key();
-int generate_responder_ICP_key();
-int create_IPC_message_queue(int ICP_key);
-int generate_reponse_queue_id();
-int generate_request_queue_id();
+int create_responder_IPC_message_queue();
+int get_responder_IPC_message_queue();
+int create_requester_IPC_message_queue();
 void destroy_IPC_message_queue(int mqueueID);
+void IPC_send_message( int mqueueID, int IPC_type, char* data_snd  );
+void IPC_receive_message( int mqueueID, int IPC_type, char* data_rcv  );
 void destroy_response_queue_id(int mqueueID);
 void destroy_request_queue_id(int mqueueID);
 

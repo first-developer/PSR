@@ -115,14 +115,10 @@ void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	display_all_commutator_ports();
 
 	// Creation de l'id  de la file de message requête du commutateur  
-	commutatorRequestQueueID = generate_request_queue_id();
+	int commutatorRequestQueueID = create_responder_IPC_message_queue();
 	start_log(("Affichage des données IPC du commutateur"))
 	printf("CommutatorRequestQueueID: %d\n", commutatorRequestQueueID);
 	
-	
-
-	//ADMIN_REQUEST_TYPE
-
 	// Lancement de la boucle d'écoute
 	if (boucleServeur( contact_socket, process_slight_activity_for) < 0) {
 		err_log("Main.boucleServeur");
