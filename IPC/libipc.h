@@ -11,8 +11,8 @@
 #define IPC_DEFAULT_ID		0
 #define NO_MQUEUE_ID		-1
 
-#define RESPONDER_IPC_KEY 		99
-#define PRIVATE_ICP_KEY			88
+#define RESPONDER_IPC_KEY 		1
+#define PRIVATE_ICP_KEY			2
 
 #define NBR_MAX_ADMIN		5
 #define NBR_MAX_COMMUTATOR 	5
