@@ -29,89 +29,50 @@ int current_requester = 0;					// la clé du client admin courant
 typedef struct {
 	long type;
 	char data[IPC_MESSAGE_SIZE];
+	int  queueID;
 } IPC_message;
 
 
 // Fonctions 
 // ----------
 
-// create_IPC_private_message_queue: pour créer une file de message privée(client admin)
-int create_IPC_private_message_queue() {
+// create_IPC_responder_message_queue: pour créer une file de message public(commutateur)
+//										accessible par la clé public 'RESPONDER_IPC_KEY'
+int create_responder_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
 
-	// On recupere l'id de la file s'il existe ou on en crée une.
-	if ( (mqueue_id = msgget(IPC_PRIVATE | IPC_CREAT | 0600)) == -1 ){
-		err_log("send_message.msgget")
+	// On crée l'id de la file de message si elle n'existe pas; Dans le cas 
+	// contraire on genere une erreur grace au flag 'IPC_EXCL'
+	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, IPC_EXCL | IPC_CREAT | 0600)) == -1 ){
+		err_log("create_responder_IPC_message_queue.msgget")
 		return -1;
 	}
 	return mqueue_id;
 }
 
-// get_IPC_private_message_queue: pour créer une file de message
-int get_IPC_private_message_queue(int ICP_key) {
+// get_responder_IPC_message_queue: recupere l'id de la file de message
+int get_responder_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
-
-	// On recupere l'id de la file s'il existe ou on en crée une.
-	if ( (mqueue_id = msgget(0600)) == -1 ){
-		err_log("send_message.msgget")
+	// recuperaton de la l'id de la file de requête
+	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, 0600)) == -1 ){
+		err_log("get_responder_IPC_message_queue.msgget")
 		return -1;
 	}
 	return mqueue_id;
 }
 	
 
-
-// create_IPC_message_queue: pour créer une file de message
-int create_IPC_message_queue(int ICP_key) {
+// create_requester_IPC_message_queue: pour créer une file de message privée (client)
+int create_requester_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
-
-	// On recupere l'id de la file s'il existe ou on en crée une.
-	if ( (mqueue_id = msgget(ICP_key, IPC_CREAT | 0600)) == -1 ){
-		err_log("send_message.msgget")
+	// On crée l'id de la file de reponse par une clé privée
+	if ( (mqueue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0600)) == -1 ){
+		err_log("create_requester_IPC_message_queue.msgget")
 		return -1;
 	}
 	return mqueue_id;
 }
 
-
-// generate_reponse_queue_id: crée l'id 
-//		de la file de message reponse et renvoie cet id (mqueue_id).
-int generate_reponse_queue_id() {
-	key_t requesterKey;
-	int mqueueID;
-	// on recupere la clé du client courant créé par 'generate_requester_ICP_key'
-	
-	// TODO: 
-	// if (current_requester == 0) {// Aucun client admin 
-	// 	err_log("generate_reponse_queue_id: Aucun client admin ")
-	// 	exit(EXIT_FAILURE);
-	// }
-
-	requesterKey = current_requester;
-
-	mqueueID = create_IPC_message_queue(requesterKey);
-	// Ajoute l'id de la file de reponse du client crée
-	requesterQueueIds[current_requester] = mqueueID;
-
-	return mqueueID;
-}
-
-
-// generate_request_queue_id: crée la clé et l'id 
-//		de la file de message requête et renvoie cet id (mqueue_id).
-int generate_request_queue_id() {
-	// on recupere la clé du commutateur courant créé par 'generate_responder_ICP_key'
-	// if (current_responder == 0) {// Aucun commutateur 
-	// 	err_log("generate_request_queue_id: Aucun commutateur ")
-	// 	exit(EXIT_FAILURE);
-	// }
-	log("generate_request_queue_id.start")
-	int mqueueID = create_IPC_message_queue(RESPONDER_IPC_KEY);
-	commutatorRequestQueueID = mqueueID;
-	printf("RequestQueueID: %d\n", mqueueID);
-	log("generate_request_queue_id.end")
-	return mqueueID;
-}
 
 
 // destroy_IPC_message_queue: pour spprime une file de message
@@ -135,7 +96,7 @@ void IPC_send_message( int mqueueID, int IPC_type, char* data_snd  ) {
 	// Initialisation des donnees du message 
 	strcpy(IPC_msg.data, data_snd);
 	IPC_msg.type = IPC_type;
-
+	IPC_msg.queueID = mqueueID;
 	// Envoie du message 
 	if ( msgsnd(mqueueID, (void *)&IPC_msg, IPC_MESSAGE_SIZE, 0) < 0 ) {
 		err_log("send_message.msgsnd")
@@ -163,21 +124,11 @@ void IPC_receive_message( int mqueueID, int IPC_type, char* data_rcv  ) {
 void destroy_response_queue_id(int mqueueID) {
 	// On tente de détruire la file de message reponse
 	destroy_IPC_message_queue(mqueueID);
-	// TODO: Uitliser une boucle pour etre sûr de supprimer le bon mqueueID
-	// On vide le contenu du client admin courant dans le tableau 'requesterQueueIds'  
-	requesterQueueIds[current_requester] = NO_MQUEUE_ID;
-	current_requester--;
-	// TODO : verifier que 'current_requester' est bien nul à la fin.
 }
 
 
 // destroy_request_queue_id: pour créer la file de message reponse
 void destroy_request_queue_id(int mqueueID) {
-	// // On tente de détruire la file de message reponse
-	// destroy_IPC_message_queue(mqueueID);
-	// // TODO: Uitliser une boucle pour etre sûr de supprimer le bon mqueueID
-	// // On vide le contenu du commutateur courant dans le tableau 'responderQueueIds'  
-	// responderQueueIds[current_responder] = NO_MQUEUE_ID;
-	// current_responder--;
-	// // TODO : verifier que 'current_responder' est bien nul à la fin.
+	// On tente de détruire la file de message reponse
+	destroy_IPC_message_queue(mqueueID);
 }
