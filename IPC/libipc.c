@@ -36,22 +36,35 @@ typedef struct {
 // Fonctions 
 // ----------
 
-// create_IPC_responder_message_queue: pour créer une file de message public(commutateur)
+// create_responder_IPC_message_queue: pour créer une file de message public(commutateur)
 //										accessible par la clé public 'RESPONDER_IPC_KEY'
 int create_responder_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
 
 	// On crée l'id de la file de message si elle n'existe pas; Dans le cas 
 	// contraire on genere une erreur grace au flag 'IPC_EXCL'
-	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, IPC_EXCL | IPC_CREAT | 0600)) == -1 ){
+	if ( (mqueue_id = msgget(IPC_PRIVATE, IPC_EXCL | IPC_CREAT | 0600)) == -1 ){
 		err_log("create_responder_IPC_message_queue.msgget")
 		return -1;
 	}
 	return mqueue_id;
 }
 
-// get_responder_IPC_message_queue: recupere l'id de la file de message
-int get_responder_IPC_message_queue() {
+
+// create_requester_IPC_message_queue: pour créer une file de message privée (client)
+int create_requester_IPC_message_queue() {
+	int mqueue_id; // identifiant de la file de message 
+	// On crée l'id de la file de reponse par une clé privée
+	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, IPC_CREAT | 0600)) == -1 ){
+		err_log("create_requester_IPC_message_queue.msgget")
+		return -1;
+	}
+	return mqueue_id;
+}
+
+
+// get_requester_IPC_message_queue: recupere l'id de la file de message
+int get_requester_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
 	// recuperaton de la l'id de la file de requête
 	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, 0600)) == -1 ){
@@ -61,19 +74,6 @@ int get_responder_IPC_message_queue() {
 	return mqueue_id;
 }
 	
-
-// create_requester_IPC_message_queue: pour créer une file de message privée (client)
-int create_requester_IPC_message_queue() {
-	int mqueue_id; // identifiant de la file de message 
-	// On crée l'id de la file de reponse par une clé privée
-	if ( (mqueue_id = msgget(IPC_PRIVATE, IPC_CREAT | 0600)) == -1 ){
-		err_log("create_requester_IPC_message_queue.msgget")
-		return -1;
-	}
-	return mqueue_id;
-}
-
-
 
 // destroy_IPC_message_queue: pour spprime une file de message
 void destroy_IPC_message_queue(int mqueueID) {

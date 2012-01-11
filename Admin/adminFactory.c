@@ -76,8 +76,8 @@ int main(int argc,char **argv) {
 	// Start requesting the server side
 	char request[IPC_MESSAGE_SIZE];
 	// Création de la file de message reponse côté client
-	int RequestQueueID = create_requester_IPC_message_queue();
-	int commutatorRequestQueueID = get_responder_IPC_message_queue();
+	int RequestQueueID = create_responder_IPC_message_queue();
+	int commutatorRequestQueueID = get_requester_IPC_message_queue();
 	printf("QueueIDServer request: %d\n", RequestQueueID);
 	printf("commutatorRequestQueueID request: %d\n", commutatorRequestQueueID);
 	while (1) {

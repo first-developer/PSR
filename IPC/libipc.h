@@ -11,8 +11,7 @@
 #define IPC_DEFAULT_ID		0
 #define NO_MQUEUE_ID		-1
 
-#define RESPONDER_IPC_KEY 		1
-#define PRIVATE_ICP_KEY			2
+#define RESPONDER_IPC_KEY 		100
 
 #define NBR_MAX_ADMIN		5
 #define NBR_MAX_COMMUTATOR 	5
@@ -31,7 +30,7 @@
 // ----------
 
 int create_responder_IPC_message_queue();
-int get_responder_IPC_message_queue();
+int get_requester_IPC_message_queue();
 int create_requester_IPC_message_queue();
 void destroy_IPC_message_queue(int mqueueID);
 void IPC_send_message( int mqueueID, int IPC_type, char* data_snd  );
