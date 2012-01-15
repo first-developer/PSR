@@ -2,7 +2,7 @@
 # Makefile pour generer le client d'administration
 
 
-OBJS = adminFactory.o
+OBJS = admin.o
 
 LOCAL_LIBS = -L ../Network  -L ../Threads -L ../IPC
 LOCAL_LIBS += -lnet  -lthrd -lipc
@@ -12,7 +12,7 @@ CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Logger
 # Cible generale
 #
 
-all: adminFactory
+all: admin
 
 #
 # La cible de nettoyage
@@ -25,8 +25,8 @@ clean:
 # Les cibles pour l'executable
 #
 
-adminFactory: $(OBJS)
-	$(CC) $(CFLAGS) -o adminFactory $(OBJS) $(LOCAL_LIBS)
+admin: $(OBJS)
+	$(CC) $(CFLAGS) -o admin $(OBJS) $(LOCAL_LIBS)
 
-adminFactory.o: adminFactory.c adminFactory.h 
-	$(CC) -c $(CFLAGS) $(LOCAL_LIBS) adminFactory.c
+admin.o: admin.c admin.h 
+	$(CC) -c $(CFLAGS) $(LOCAL_LIBS) admin.c

@@ -26,12 +26,13 @@ int current_requester = 0;					// la clé du client admin courant
 // Structures
 // ----------
 
+#pragma pack(1)
 typedef struct {
 	long type;
 	char data[IPC_MESSAGE_SIZE];
 	int  queueID;
 } IPC_message;
-
+#pragma pack()
 
 // Fonctions 
 // ----------
@@ -43,7 +44,7 @@ int create_responder_IPC_message_queue() {
 
 	// On crée l'id de la file de message si elle n'existe pas; Dans le cas 
 	// contraire on genere une erreur grace au flag 'IPC_EXCL'
-	if ( (mqueue_id = msgget(IPC_PRIVATE, IPC_EXCL | IPC_CREAT | 0600)) == -1 ){
+	if ( (mqueue_id = msgget(IPC_PRIVATE, IPC_EXCL | IPC_CREAT | 0666)) == -1 ){
 		err_log("create_responder_IPC_message_queue.msgget")
 		return -1;
 	}
@@ -55,7 +56,7 @@ int create_responder_IPC_message_queue() {
 int create_requester_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
 	// On crée l'id de la file de reponse par une clé privée
-	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, IPC_CREAT | 0600)) == -1 ){
+	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, IPC_EXCL | IPC_CREAT | 0666)) == -1 ){
 		err_log("create_requester_IPC_message_queue.msgget")
 		return -1;
 	}
@@ -67,7 +68,7 @@ int create_requester_IPC_message_queue() {
 int get_requester_IPC_message_queue() {
 	int mqueue_id; // identifiant de la file de message 
 	// recuperaton de la l'id de la file de requête
-	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, 0600)) == -1 ){
+	if ( (mqueue_id = msgget(RESPONDER_IPC_KEY, 0666)) == -1 ){
 		err_log("get_responder_IPC_message_queue.msgget")
 		return -1;
 	}
@@ -96,9 +97,10 @@ void IPC_send_message( int mqueueID, int IPC_type, char* data_snd  ) {
 	// Initialisation des donnees du message 
 	strcpy(IPC_msg.data, data_snd);
 	IPC_msg.type = IPC_type;
-	IPC_msg.queueID = mqueueID;
+
+	int size = sizeof(IPC_message) - sizeof(long);
 	// Envoie du message 
-	if ( msgsnd(mqueueID, (void *)&IPC_msg, IPC_MESSAGE_SIZE, 0) < 0 ) {
+	if ( msgsnd(mqueueID, (void *)&IPC_msg, size, 0) < 0 ) {
 		err_log("send_message.msgsnd")
 		exit(EXIT_FAILURE);
 	}
@@ -108,15 +110,18 @@ void IPC_send_message( int mqueueID, int IPC_type, char* data_snd  ) {
 // IPC_receive_message: recuperer les messages envoyés par 'type' 
 void IPC_receive_message( int mqueueID, int IPC_type, char* data_rcv  ) {
 	IPC_message IPC_msg;
-	
+	int size = sizeof(IPC_message) - sizeof(long);
 	// reception du message du message 
-	if ( msgrcv(mqueueID, (void *)& IPC_msg, IPC_MESSAGE_SIZE, IPC_type, 0) < 0 ) {
+	if ( msgrcv(mqueueID, (void *)& IPC_msg, size, IPC_type, 0) < 0 ) {
 		err_log("IPC_receive_message.msgsnd")
 		exit(EXIT_FAILURE);
 	}	
-
+	
 	// On met la reponse dans la variable 'data_rcv'
-	data_rcv = IPC_msg.data;
+	if (strcpy(data_rcv,IPC_msg.data)) {
+		err_log("IPC_receive_message.strcpy")
+		exit(EXIT_FAILURE);
+	}
 }
 	
 

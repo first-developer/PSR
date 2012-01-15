@@ -65,11 +65,15 @@ void handle_connection (int connected_socket) {  // côté client
 	
 
 	fflush(connected_socket_file);  // clean buffer
-	while (fgets(buffer, BUFFER_SIZE, connected_socket_file )>0) {
+	
+	if (fgets(buffer, BUFFER_SIZE, connected_socket_file )) {
+		// TODO: filtrer pour recupere le port 
+		if (!strcmp(buffer, "lport")) {
+			fprintf(connected_socket_file, "    %s>> %s%s\n", BBLACK, "OK", BLACK);	
+		}
 		fprintf(stdout, "%s    > %s%s\n ", BBLACK, buffer, BLACK);
-		fprintf(connected_socket_file, "    %s>> %s%s\n", BBLACK, buffer, BLACK);
-		break;
 	}
+	
 	log_ok(("DECONNEXION"))
 	end_log()
 	fclose(connected_socket_file);

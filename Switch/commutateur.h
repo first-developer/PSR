@@ -118,6 +118,7 @@ PortList* create_and_init_port_list();
 void init_commutator_ports ();
 PortList* create_port_list();
 void display_all_commutator_ports();
+Port* get_port_from_commutator(int numPort);
 
 // Commutateur
 void create_and_init_commutator();

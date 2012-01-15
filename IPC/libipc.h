@@ -6,12 +6,12 @@
 // Structures
 // ----------
 
-#define IPC_MESSAGE_SIZE	1024
+#define IPC_MESSAGE_SIZE	256
 #define IPC_FILE_PATH		"."
 #define IPC_DEFAULT_ID		0
 #define NO_MQUEUE_ID		-1
 
-#define RESPONDER_IPC_KEY 		100
+#define RESPONDER_IPC_KEY 		11
 
 #define NBR_MAX_ADMIN		5
 #define NBR_MAX_COMMUTATOR 	5

@@ -43,6 +43,8 @@
 // Variables 
 // -----------------
 Commutator commutateur;  // the main commutator
+char msg_rcv[IPC_MESSAGE_SIZE];
+
 
 
 // Helper functions 
@@ -54,8 +56,8 @@ unsigned short int get_port_from_options(int argc,char **argv) {
 	char options; // Main option
 
 	static struct option long_options[] = {
-			{"port", 0, 0, 'p'},
-			{"help", 0, 0, 'h'}
+		{"port", 0, 0, 'p'},
+		{"help", 0, 0, 'h'}
 	};
 
 	char* liste_opts = "p:h";
@@ -65,13 +67,13 @@ unsigned short int get_port_from_options(int argc,char **argv) {
 
 	// Handle options passed to ME!
 	if ( argc > 1 ) {
-		if ((options = getopt_long(argc, argv, liste_opts, long_options, &option_index)) != -1 )  {
+		if ((options = getopt_long(argc, argv, liste_opts, long_options, &option_index)) != -1 ) {
 			if (options == 'p' && argc > 2) {
 				port = atoi(argv[2]);
 			}
 			else { // is 'h' options
 				start_help((" Erreur de syntax"))
-				fprintf(stderr, "    %s> Syntaxe : %s%s%s [-p | --port port]%s\n", BBLACK, BLACK, argv[0], BBLUE, BLACK);
+				fprintf(stderr, " %s> Syntaxe : %s%s%s [-p | --port port]%s\n", BBLACK, BLACK, argv[0], BBLUE, BLACK);
 				end_log()
 				port = DEFAULT_PORT;
 			}
@@ -80,13 +82,12 @@ unsigned short int get_port_from_options(int argc,char **argv) {
 	return port;
 }
 
-
 // init_and_loop_server: 	intialise la socket de connexion du serveur
 //							et effectue boucle de connexion	pour les clients
 void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	short int port;
 	int contact_socket; // socket sur laquelle contacter le serveur
-
+	
 	// recupération du port entré par l'utilisateur
 	if ( (port = get_port_from_options(argc, argv)) == DEFAULT_PORT ) {
 		exit(EXIT_FAILURE);
@@ -115,90 +116,119 @@ void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	display_all_commutator_ports();
 
 	// Creation de l'id  de la file de message requête du commutateur  
-	int commutatorRequestQueueID = create_requester_IPC_message_queue();
-	start_log(("Affichage des données IPC du commutateur"))
-	printf("CommutatorRequestQueueID: %d\n", commutatorRequestQueueID);
+	// int commutatorRequestQueueID = create_requester_IPC_message_queue();
+	// start_log(("Affichage des données IPC du commutateur"))
+	// printf("CommutatorRequestQueueID: %d\n", commutatorRequestQueueID);
 	
-	// Lancement de la boucle d'écoute
-	if (boucleServeur( contact_socket, process_slight_activity_for) < 0) {
-		err_log("Main.boucleServeur");
-		exit(EXIT_FAILURE);
-	}
-}
+	// while(1) {
+		// 	// Recuperation de la requete du client admin 
+		// 	IPC_receive_message(commutatorRequestQueueID, ADMIN_REQUEST_TYPE, msg_rcv);
+		// 	log(msg_rcv)
+		// }
 
 
-// Create_and_init_commutator: crée et initialise le commutateur   
-void create_and_init_commutator() {
-	// Commutator * commutateur = (Commutator *) malloc(sizeof(Commutator));
-	// if (commutateur == NULL) {
-	// 	err_log(("create_and_init_commutator.malloc"))
-	// 	exit(EXIT_FAILURE);
-	// }
-
-	// On crée la list des admin et des ports
-	AdminList *AL = create_admin_list();
-	PortList  *PL = create_port_list();
-
-	commutateur.admins = *AL;
-	commutateur.ports  = *PL;
-}
-
-// create_and_init_port: crée et initialise le port
-Port* create_and_init_port( int num) {
-	Port* p = (Port*)malloc(sizeof(Port));
-	if (p == NULL) {
-		err_log(("create_and_init_port.malloc"))
-		exit(EXIT_FAILURE);
+		// Lancement de la boucle d'écoute
+		if (boucleServeur( contact_socket, process_slight_activity_for) < 0) {
+			err_log("Main.boucleServeur");
+			exit(EXIT_FAILURE);
+		}
 	}
 
-	// On donne les attributs par defaut
-	p->num 		= num;
-	p->type 	= NO_PORT_TYPE;
-	p->state 	= 0;
-	p->vlan 	= 0;	
-	p->IEV_fd 	= 0;	
-	p->socket_fd= 0;							
-	p->rcv_size = 0; 							 
-	p->snd_size = 0;
-	
-	return p;	
-}
 
-// create_port_list: create a list
-PortList* create_port_list() {
-	PortList* pl = (PortList*)malloc(sizeof(PortList));
-	if (pl == NULL) {
-		err_log(("create_and_init_port.malloc"))
-		exit(EXIT_FAILURE);
+	// Create_and_init_commutator: crée et initialise le commutateur   
+	void create_and_init_commutator() {
+		// On crée la list des admin et des ports
+		AdminList *AL = create_admin_list();
+		PortList  *PL = create_port_list();
+
+		commutateur.admins = *AL;
+		commutateur.ports  = *PL;
 	}
-	return pl;
-}
 
-// init_commutator_ports: initialise les ports du commutateur
-void init_commutator_ports () {
-	PortList * ports = &(commutateur.ports);
-	int i;
+	// create_and_init_port: crée et initialise le port
+	Port* create_and_init_port( int num) {
+		Port* p = (Port*)malloc(sizeof(Port));
+		if (p == NULL) {
+			err_log(("create_and_init_port.malloc"))
+			exit(EXIT_FAILURE);
+		}
 
-	for (i=0; i<NBR_MAX_PORT;i++) {
-		ports->list[i] = (Port)*(create_and_init_port(i));
-	} 
-}
+		// On donne les attributs par defaut
+		p->num 		= num;
+		p->type 	= NO_PORT_TYPE;
+		p->state 	= 0;
+		p->vlan 	= 0;	
+		p->IEV_fd 	= 0;	
+		p->socket_fd= 0;							
+		p->rcv_size = 0; 							 
+		p->snd_size = 0;
 
-// void display_all_commutator_ports: affiche tous les ports du comutateur et leurs détails 
-void display_all_commutator_ports() {
-	PortList  ports = commutateur.ports;
-	int i;
-	Port* port;
-	for (i=0; i<NBR_MAX_PORT;i++) {
-		port = &((ports.list)[i]);
-		display_port_infos(port, stderr)
-	} 
-}
+		return p;	
+	}
 
 
-// Procedure principale
-// --------------------
-int main(int argc,char **argv) {
-	init_commutator_and_listen_to_connections(argc, argv);
-	return 0;
-}
+	// create_port_list: create a list
+	PortList* create_port_list() {
+		PortList* pl = (PortList*)malloc(sizeof(PortList));
+		if (pl == NULL) {
+			err_log(("create_and_init_port.malloc"))
+			exit(EXIT_FAILURE);
+		}
+		return pl;
+	}
+
+
+	// init_commutator_ports: initialise les ports du commutateur
+	void init_commutator_ports () {
+		PortList * ports = &(commutateur.ports);
+		int i;
+
+		for (i=0; i<NBR_MAX_PORT;i++) {
+			ports->list[i] = (Port)*(create_and_init_port(i));
+		} 
+	}
+
+
+	// void display_all_commutator_ports: affiche tous les ports du comutateur et leurs détails 
+	void display_all_commutator_ports() {
+		PortList  ports = commutateur.ports;
+		int i;
+		Port* port;
+		for (i=0; i<NBR_MAX_PORT;i++) {
+			port = &((ports.list)[i]);
+			display_port_infos(port, stderr)
+		} 
+	}
+
+
+	// get_port_from_commutator: recuperation du port à l'état connecté
+	Port* get_port_from_commutator(int numPort) {
+		PortList ports = commutateur.ports;	
+		Port* port;
+		int i;
+
+		if (numPort > 0 && numPort < NBR_MAX_PORT) {
+			for (i=0; i<NBR_MAX_PORT;i++) {
+				if (((ports.list)[i]).num == numPort) {
+					port = &((ports.list)[i]);
+				}
+				else {
+					log("get_port_from_commutator: port indisponible")
+					port = (Port*) NULL;
+				}
+			} 
+		}
+		else {
+			log("get_port_from_commutator: mauvais numéro de port")
+			port = (Port*) NULL;
+		}
+		return port;
+	}
+
+
+	// Procedure principale
+	// --------------------
+	int main(int argc,char **argv) {
+		init_commutator_and_listen_to_connections(argc, argv);
+		return 0;
+	}
