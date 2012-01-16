@@ -53,19 +53,19 @@ void process_admin_requests(int argc,char **argv) {
 	char optionArg; // Main option
 
 	static struct option long_options[] = {
-			{HELP_CMD, 					NOT_REQUIRED, 	NULL, 	'h'},
-			{PORT_OPTION, 				NOT_REQUIRED, 	NULL, 	'p'},
-			{LIST_PORT_CMD,				NOT_REQUIRED, 	NULL, 	'l'},
-			{SHOW_PORT_INFOS_CMD, 		REQUIRED, 		NULL, 	'a'},
-			{LIST_PORT_ADDRESSES_CMD, 	REQUIRED, 		NULL, 	'A'},
-			{TAP_CONNECTION_CMD, 		REQUIRED, 		NULL, 	'c'},
-			{TCP_CONNECTION_CMD, 		REQUIRED, 		NULL, 	'C'},
-			{SET_PORT_VLAN_CMD, 		REQUIRED, 		NULL, 	'v'},
-			{DISCONNECT_PORT_CMD, 		REQUIRED, 		NULL, 	'd'},
-			{SHOW_PORT_STAT_CMD, 		REQUIRED, 		NULL, 	's'},
-			{TRIGGER_EVENTS_CMD, 		NOT_REQUIRED,	NULL, 	 0},
-			{SNIFFER_PORT_CMD,			NOT_REQUIRED, 	NULL, 	 0},
-			{STOP_CMD, 					NOT_REQUIRED, 	NULL, 	 0},
+			{HELP_CMD,					NOT_REQUIRED,	NULL,	'h'},
+			{PORT_OPTION,				NOT_REQUIRED,	NULL,	'p'},
+			{LIST_PORT_CMD,				NOT_REQUIRED,	NULL,	'l'},
+			{SHOW_PORT_INFOS_CMD,		REQUIRED,		NULL,	'a'},
+			{LIST_PORT_ADDRESSES_CMD,	REQUIRED,		NULL,	'A'},
+			{TAP_CONNECTION_CMD,		REQUIRED,		NULL,	'c'},
+			{TCP_CONNECTION_CMD,		REQUIRED,		NULL,	'C'},
+			{SET_PORT_VLAN_CMD,			REQUIRED,		NULL,	'v'},
+			{DISCONNECT_PORT_CMD,		REQUIRED,		NULL,	'd'},
+			{SHOW_PORT_STAT_CMD,		REQUIRED,		NULL,	's'},
+			{TRIGGER_EVENTS_CMD,		NOT_REQUIRED,	NULL,	0},
+			{SNIFFER_PORT_CMD,			NOT_REQUIRED,	NULL,	0},
+			{STOP_CMD,					NOT_REQUIRED,	NULL,	0},
 			{0, 0, 0, 0}
 	};
 
