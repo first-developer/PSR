@@ -60,9 +60,9 @@
 											end_log()
 	
 #else
-	display_port_infos_state(p, output)
-	display_port_infos_type(p,output)
-	display_port_infos(p,output)
+	#define display_port_infos_state(p, output)
+	#define display_port_infos_type(p,output)
+	#define display_port_infos(p,output)
 #endif
 
 

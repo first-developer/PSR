@@ -114,7 +114,7 @@ void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	init_commutator_ports();
 	start_log("initialisation des ports du commutateur")
 	display_all_commutator_ports();
-
+	//display_command_list( stderr);
 	// Creation de l'id  de la file de message requête du commutateur  
 	// int commutatorRequestQueueID = create_requester_IPC_message_queue();
 	// start_log(("Affichage des données IPC du commutateur"))

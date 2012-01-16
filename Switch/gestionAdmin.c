@@ -17,13 +17,13 @@
 #include <string.h>
 #include <getopt.h>
 
+#include "libipc.h"
 
 #include "libnet.h"
 #include "libthrd.h"
+#include "gestionAdmin.h"
 #include "gestionConnexions.h"
 #include "commandesAdmin.h"
-#include "libipc.h"
-#include "gestionAdmin.h"
 #include "commutateur.h"
 #include "logger.h"
 
@@ -33,9 +33,9 @@
 // External variables
 // -------------------
 extern char *optarg;
-extern int optind,
-       opterr,
-       optopt;
+extern int 	optind,
+       		opterr,
+       		optopt;
 
 // Fonctions principale de gestion de l'agent d'administration 
 // ------------------------------------------------------------

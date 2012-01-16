@@ -1,8 +1,8 @@
 
 
 // Avoid multiple inclusions
-#ifndef ADMIN_FACTORY_HEADER
-#define ADMIN_FACTORY_HEADER
+#ifndef ADMIN_HEADER
+#define ADMIN_HEADER
 
 
 // Structures

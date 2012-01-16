@@ -54,39 +54,39 @@
 
 #ifdef DEBUG
 	#define help_lister_cmd(output)			fprintf(output, \
-												"\n%s -l | --lister :%s liste les ports d'un commutateur\n",\
-												MAGENTA, END_LOG_COLOR);
+												"%s[-l|--lister] \t\t\t%s# liste les ports d'un commutateur\n",\
+												BCYAN, END_LOG_COLOR);
 	#define help_afficher_cmd(output)		fprintf(output, \
-												"\n%s -a | --afficher <n port> :%s affiche les details d'un port\n", \
-												MAGENTA, END_LOG_COLOR);
+												"%s[-a|--afficher <port>] \t\t%s# affiche les details d'un port\n", \
+												BCYAN, END_LOG_COLOR);
 	#define help_addresses_cmd(output)		fprintf(output, \
-												"\n%s -A | --addresses <n port> :%s liste les addr. ethernet d'un port avec l'age\n",\
-												MAGENTA, END_LOG_COLOR);
+												"%s[-A|--addresses <port>] \t%s# liste les addr. ethernet d'un port avec l'age\n",\
+												BCYAN, END_LOG_COLOR);
 	#define help_connecter_tap_cmd(output)	fprintf(output, \
-												"\n%s -c | --connecter_tap <n port> :%s connecter un port a une interface virtuelle\n", \
-												MAGENTA, END_LOG_COLOR);
+												"%s[-c|--connecter_tap <port>] %s\t# connecter un port a une interface virtuelle\n", \
+												BCYAN, END_LOG_COLOR);
 	#define help_connecter_tcp_cmd(output)	fprintf(output, \
-												"\n%s -C | --connecter_tcp <n lport>:[<port TCP>@]<nom machine>:<n dport> "\
-												":%s connecter un port a une interface virtuelle\n", \
-												MAGENTA, END_LOG_COLOR);
+												"%s[-C|--connecter_tcp <lport>:[<port TCP>@]<machine>:<dport>] "\
+												"%s# connecter un port a une interface virtuelle\n", \
+												BCYAN, END_LOG_COLOR);
 	#define help_vlan_cmd(output)			fprintf(output, \
-												"\n%s -v | --vlan <n port>:<n port vlan> %s: affecter un numero de port a un port local\n", \
-												MAGENTA, END_LOG_COLOR);
+												"%s[-v|--vlan <port>:<vlan>] %s\t# affecter un numero de port a un port local\n", \
+												BCYAN, END_LOG_COLOR);
 	#define help_deconnecter_cmd(output)	fprintf(output, \
-												"\n%s -d | --deconnecter <n port> :%s deconnecter un port local de son intf eth virtuel "\
-												"ou un commutateur distant\n", MAGENTA, END_LOG_COLOR);
+												"%s[-d|--deconnecter <port>] %s\t# deconnecter un port \n", BCYAN, END_LOG_COLOR);
 	#define help_stats_cmd(output)			fprintf(output, \
-												"\n%s -s | --stats <n port> :%s affiche les stats d'un port ( octets recus et envoyes)\n",\
-													MAGENTA, END_LOG_COLOR);
+												"%s[-s|--stats <port>] %s\t\t# affiche les stats d'un port ( octets recus et envoyes)\n",\
+													BCYAN, END_LOG_COLOR);
 	#define help_scruter_cmd(output)		fprintf(output, \
-												"\n%s --scruter :%s scruter les evenements relatifs aux connexions et deconnexions "\
-												"de ports\n", MAGENTA, END_LOG_COLOR);
+												"%s[--scruter] %s\t\t\t# scruter les evenements relatifs aux connexions et deconnexions "\
+												"de ports\n", BCYAN, END_LOG_COLOR);
 	#define help_sniffer_cmd(output)		fprintf(output, \
-												"\n%s --sniffer :%s affiche les paquets arrivants ou partant d'un port\n", \
-												MAGENTA, END_LOG_COLOR);
+												"%s[--sniffer <port>] %s\t\t# affiche les paquets arrivants ou partant d'un port\n", \
+												BCYAN, END_LOG_COLOR);
 	#define help_stopper_cmd(output)		fprintf(output, \
-												"\n%s --stopper :%s arreter le commutateur virtuel\n", MAGENTA, END_LOG_COLOR);
+												"%s[--stopper] %s\t\t\t# arreter le commutateur virtuel\n", BCYAN, END_LOG_COLOR);
 	#define help_command_list(output) \
+	    help("Liste des commandes")\
 		help_lister_cmd(output) \
 		help_afficher_cmd(output) \
 		help_addresses_cmd(output) \
@@ -97,10 +97,8 @@
 		help_stats_cmd(output) \
 		help_scruter_cmd(output) \
 		help_sniffer_cmd(output) \
-		help_stopper_cmd(output)\
-		print_newline()
+		help_stopper_cmd(output)
 #else
-	#define display_command_list()	
 	#define help_lister_cmd(output)										
 	#define help_afficher_cmd(output)	
 	#define help_addresses_cmd(output)	
