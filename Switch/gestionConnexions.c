@@ -23,6 +23,7 @@
 #include "libnet.h"
 #include "libthrd.h"
 #include "gestionConnexions.h"
+#include "commandesAdmin.h"
 #include "logger.h"
 
 
@@ -42,6 +43,8 @@
 void handle_connection (int connected_socket) {  // côté client
 	char buffer[MAX_SIZE];
 	FILE* connected_socket_file;
+	int lport, dport;
+	int lport_is_set=0; // pour verifier qu'on a bien lport et dport de suite
 
 	// Affichage des infos de l'initiateur de la socket de connection
 	log_ok(("CONNEXION"))
@@ -67,13 +70,35 @@ void handle_connection (int connected_socket) {  // côté client
 	fflush(connected_socket_file);  // clean buffer
 	
 	if (fgets(buffer, BUFFER_SIZE, connected_socket_file )) {
-		// TODO: filtrer pour recupere le port 
-		if (!strcmp(buffer, "lport")) {
-			fprintf(connected_socket_file, "    %s>> %s%s\n", BBLACK, "OK", BLACK);	
+		if (sscanf(buffer, "lport %d\n", &lport) == 1) {
+			err_log(("handle_connection.sscanf: (lport) mauvais parametres"))
+			// envoyer un SYNTAX au commutateur pour invalider la requete
+			fprintf(connected_socket_file, SYNTAX_MSG);
 		}
-		fprintf(stdout, "%s    > %s%s\n ", BBLACK, buffer, BLACK);
+		else {
+			lport_is_set = 1; // on fait signe d'avoir reçu le lport
+
+			// send lport et dport to the 
+			fprintf(connected_socket_file, OK_MSG);
+			
+			if (fgets(buffer, BUFFER_SIZE, connected_socket_file )) {
+				if (sscanf(buffer, "dport %d\n", &lport) == 1) {
+					err_log(("handle_connection.sscanf: (dport) mauvais parametres"))
+					// envoyer un SYNTAX au commutateur pour invalider la requete
+					fprintf(connected_socket_file, SYNTAX_MSG);
+				}
+				else {
+					if (lport_is_set == 1) { 
+						fflush(connected_socket_file);  // clean buffer
+
+						// on envoie le OK pour le dport
+						fprintf(connected_socket_file, OK_MSG);	
+					}
+				}
+			}
+		}
 	}
-	
+
 	log_ok(("DECONNEXION"))
 	end_log()
 	fclose(connected_socket_file);

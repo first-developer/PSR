@@ -1,4 +1,4 @@
-/** fichier algorithmeCommutateur.h **/
+/** fichier algorithmeCommutateur.h **/	
 
 /******************************************************/
 /* Ce fichier contient les déclarations des objets    */
@@ -6,3 +6,4 @@
 /******************************************************/
 
 /***** prototypes des fonctions publiques *****/
+

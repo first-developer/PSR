@@ -14,6 +14,8 @@
 // Constants
 // ----------
 
+#define MAX_BUFFER_SIZE				1025
+
 #define PORT_OPTION 				"port"
 #define HELP_CMD 					"help"
 #define LIST_PORT_CMD				"lister"
@@ -45,12 +47,51 @@
 
 #define REQUEST_SIZE					256
 
+#define	SYNTAX_MSG				"syntax\n"
+#define	OK_MSG					"ok\n"
+#define	BOUNDS_MSG				"bounds\n"
+
+
 // Structures
 // ----------
 
 
 // Macros
 // ------
+
+// build the help message before send it to the client 
+#define build_help_string(buffer)			sprintf(buffer, \
+			"%s[-l|--lister] \t\t\t%s# liste les ports d'un commutateur\n",\
+				BCYAN, END_LOG_COLOR);\
+			sprintf(buffer, \
+				"%s[-a|--afficher <port>] \t\t%s# affiche les details d'un port\n",	BCYAN, END_LOG_COLOR); \
+			sprintf(buffer, \
+				"%s[-A|--addresses <port>] \t%s# liste les addr. ethernet d'un port avec l'age\n",\
+				BCYAN, END_LOG_COLOR);\
+			sprintf(buffer, \
+				"%s[-c|--connecter_tap <port>] %s\t# connecter un port a une interface virtuelle\n", \
+				BCYAN, END_LOG_COLOR);\
+			sprintf(buffer, \
+				"%s[-C|--connecter_tcp <lport>:[<port TCP>@]<machine>:<dport>] "\
+				"%s# connecter un port a une interface virtuelle\n", \
+				BCYAN, END_LOG_COLOR); \
+			sprintf(buffer, \
+				"%s[-v|--vlan <port>:<vlan>] %s\t# affecter un numero de port a un port local\n", \
+				BCYAN, END_LOG_COLOR);\
+			sprintf(buffer, \
+				"%s[-d|--deconnecter <port>] %s\t# deconnecter un port \n", BCYAN, END_LOG_COLOR);\
+			sprintf(buffer, \
+				"%s[-s|--stats <port>] %s\t\t# affiche les stats d'un port ( octets recus et envoyes)\n",\
+				BCYAN, END_LOG_COLOR); \
+			sprintf(buffer, \
+				"%s[--scruter] %s\t\t\t# scruter les evenements relatifs aux connexions et deconnexions "\
+				"de ports\n", BCYAN, END_LOG_COLOR); \
+			sprintf(buffer, \
+				"%s[--sniffer <port>] %s\t\t# affiche les paquets arrivants ou partant d'un port\n", \
+				BCYAN, END_LOG_COLOR);\
+			sprintf(buffer, \
+				"%s[--stopper] %s\t\t\t# arreter le commutateur virtuel\n", BCYAN, END_LOG_COLOR);
+
 
 #ifdef DEBUG
 	#define help_lister_cmd(output)			fprintf(output, \
