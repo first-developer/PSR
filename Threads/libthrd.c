@@ -21,8 +21,8 @@ typedef struct  {
 
 // Variables globales
 // ------------------
-
-pthread_mutex_t mutex_client = PTHREAD_MUTEX_INITIALIZER;
+#define NBR_MAX_PORT 5
+pthread_mutex_t mutex_client[NBR_MAX_PORT];
 
 
 // Fonctions
@@ -78,9 +78,19 @@ void lanceThread(void (*fn)(int), int fn_param) {
 // primitives de gestion des semaphores
 
 void P(int S) {
-  pthread_mutex_lock(& mutex_client);
+  if (S < 0) {
+    log("aucune ressources disponibles" )
+  }
+  else {
+    pthread_mutex_lock(&  (mutex_client[S]));  
+  }
+  
 }
 
 void V(int S) {
-  pthread_mutex_unlock(& mutex_client); 
+  if (S > NBR_MAX_PORT) {
+  }
+  else {
+    pthread_mutex_unlock(&(mutex_client[S])); 
+  }
 }

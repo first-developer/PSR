@@ -118,5 +118,6 @@ void display_command_list( FILE* output);
 void list_port_addresses( char* Args);
 void show_port_infos( char* Args);
 void list_port_on_commutator_with_status();
-
+void connect_TAP ( int port, int mqueueID);
+void vlan (int port, int vlan);
 #endif

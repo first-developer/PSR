@@ -33,6 +33,6 @@
 // ----------
 
 int main(int argc,char **argv) {
-	process_admin_requests(argc, argv);
+	// process_admin_requests(argc, argv);
 	return EXIT_SUCCESS;
 }
