@@ -1,75 +1,84 @@
-/** fichier commutateur.h **/
 
-/***************************************************/
-/* Structures necessaires a la gestion du          */
-/* commutateur                                     */
-/***************************************************/
+#ifndef COMMUTATEUR_H
+#define COMMUTATEUR_H 
 
-#ifndef COMMUTATEUR_HEADER
-#define COMMUTATEUR_HEADER
-
-// Inclusions
-// -----------
-//	static int CommutatorRequestQueueID;	// id file de la requête 
-
-
-// Constantes 
+#include "constants.h"
+// Constants
 // ----------
 
-#define ETHERNET_ADDRESS_SIZE		6
-#define NBR_MAX_PORT				5
-#define NBR_MAX_ETHERNET_ADDR		5
+#define COMMUTATOR_VERROU			0
+
+#define	NO_PORT						0
+#define SERVER_LOCAL_PORT 			5000
+#define SERVER_LOCAL_IP 			"127.0.0.1"
+
+#define ETHERNET_ADDRESS_SIZE 		6
+
+#define NBR_MAX_PORT 				5
+#define NBR_MAX_CLIENT 				5
+#define NBR_MAX_ETHERNET_ADDR 		5
+
 // Type de port
-#define INTF_ETHERNET_PORT_TYPE		0
-#define TCP_CONNECTION_PORT_TYPE	1
+#define INTF_ETHERNET_PORT_TYPE 	0
+#define TCP_CONNECTION_PORT_TYPE 	1
 #define NO_PORT_TYPE 				-1
 
 // Etat de la connexion
-#define PORT_STATE_CONNECTED		1
-#define PORT_STATE_DISCONNECTED		0
-#define CONNECTED_STATE				"connecte"
-#define DISCONNECTED_STATE			"deconnecte"
+#define PORT_STATE_CONNECTED 		1
+#define PORT_STATE_DISCONNECTED 	0
+#define CONNECTED_STATE 			"connecte"
+#define DISCONNECTED_STATE 			"deconnecte"
 
+
+
+// Variables
+// ----------
+char buffer[MAX_BUFFER_SIZE];
+char fake_string[MIN_BUFFER_SIZE];
 
 // Macro 
 // ------
 
 #ifdef DEBUG
-	#define display_port_infos_state(p, output)	if (p->state == PORT_STATE_CONNECTED ) {\
-													fprintf(output, "%s - etat     = %s %s", MAGENTA, BBLACK,CONNECTED_STATE);\
-												}\
-												else {\
-													fprintf(output, "%s - etat     = %s %s", MAGENTA, BBLACK, DISCONNECTED_STATE);\
-												}
-	#define display_port_infos_type(p,output)	if (p->type == INTF_ETHERNET_PORT_TYPE ) {\
-													fprintf(output, "%s - type     = %s %s", MAGENTA, BBLACK, "Pnterface Ethernet");\
-												}\
-												else if (p->type == TCP_CONNECTION_PORT_TYPE ){\
-													fprintf(output, "%s - type     = %s %s", MAGENTA, BBLACK, "Connexion TCP");\
-												}\
-												else {\
-													fprintf(output, "%s - type     = %s %s", MAGENTA, BBLACK, "Pas de type");\
-												}
-	#define display_port_infos(p,output)	fprintf(output, "\n%sPORT [%d]: %s", BBLACK, p->num, BBLACK);print_newline()\
-											fprintf(output, "%s - num      = %s%d", MAGENTA, BBLACK, p->num);print_newline()\
-											display_port_infos_state(p, output) print_newline()\
-											display_port_infos_type(p, output) print_newline() \
-											fprintf(output, "%s - VLAN     = %s %d", MAGENTA, BBLACK, p->vlan   ); print_newline()\
-											fprintf(output, "%s - rcv_size = %s %d", MAGENTA, BBLACK, p->rcv_size); print_newline()\
-											fprintf(output, "%s - snd_size = %s %d", MAGENTA, BBLACK, p->snd_size); print_newline()\
-											end_log()
+	#define build_port_state_string(p,buffer)		if (p.state == PORT_STATE_CONNECTED ) {\
+			strcat(buffer, "+ etat     = connected\n");\
+		}\
+		else {\
+			strcat(buffer, "+ etat     = disconnected\n");\
+		}
+	#define build_port_type_string(p,buffer)		if (p.type == INTF_ETHERNET_PORT_TYPE ) {\
+			strcat(buffer, "+ type     = Ethernet Interface\n");\
+		}\
+		else if (p.type == TCP_CONNECTION_PORT_TYPE ){\
+			strcat(buffer, "+ type     = Connexion TCP\n");\
+		}\
+		else {\
+			strcat(buffer, "+ type     = Aucun type\n");\
+		}
+	#define display_port_infos(p, output)		sprintf(buffer, "PORT [%d]:\n", p.num);\
+		sprintf(fake_string, "+ num      = %d\n",  p.num);\
+		strcat(buffer, fake_string);\
+		build_port_state_string(p,buffer)\
+		build_port_type_string(p,buffer)\
+		sprintf(fake_string, "+ vlan     = %d\n", p.vlan   ); \
+		strcat(buffer, fake_string);\
+		sprintf(fake_string, "+ rcv_size = %d\n", p.rcv_size);\
+		strcat(buffer, fake_string);\
+		sprintf(fake_string, "+ snd_size = %d\n\n", p.snd_size);\
+		strcat(buffer, fake_string);\
+		fprintf(output, buffer);
 	
+
 #else
-	#define display_port_infos_state(p, output)
-	#define display_port_infos_type(p,output)
-	#define display_port_infos(p,output)
+	build_port_state_string(p,buffer)
+	build_port_type_string(p,buffer)
+	display_port_infos(p, output)
 #endif
 
 
 
 
-
-// Structures 
+// Structures
 // ----------
 
 // Adresse ethernet
@@ -77,58 +86,49 @@ typedef struct {
   unsigned char bytes[ETHERNET_ADDRESS_SIZE];
 } EthernetAddress;
 
+// Port
 typedef struct {
-  EthernetAddress list[NBR_MAX_ETHERNET_ADDR];
-} EthernetAddresses;
-
-
-typedef struct {
-	short int num;
-	int state;								// Etat du port
-	int type;								// Type du port
-	EthernetAddresses eth_addresses;
-	int vlan;								// Numéro de VLAN
-	int IEV_fd;								// descripteur  d' Interface Ethernet Virtuelle (IEV)
-	int socket_fd;							// descripteur de socket
-	int rcv_size; 							// Taille des données reçues 
-	int snd_size;							// Taille des données envoyées 
+short int num;						// numero de port
+int state; 							// Etat du port
+int type;  							// Type du port
+EthernetAddress addresses[NBR_MAX_ETHERNET_ADDR];
+int vlan; 							// Numéro de VLAN
+int fd; 							// descripteur d' Interface Ethernet Virtuelle 
+int sd; 							// descripteur de socket
+int rcv_size; 						// Taille des données reçues
+int snd_size; 						// Taille des données envoyées
 } Port;
 
-typedef struct {
-	Port list[NBR_MAX_PORT];
-} PortList;
+// CLient
+typedef struct Client{
+	int num;
+	int responseID;
+} Client; 
 
-
+// Commutator
 typedef struct Commutator{
-	AdminList admins;  	// liste des clients en attente d'infos
-	PortList ports; 	// L'ensemble des ports du commutateur	
+	Client clients[NBR_MAX_CLIENT]; 	// liste des clients en attente d'infos
+	Port ports[NBR_MAX_PORT]; 		// L'ensemble des ports du commutateur
 } Commutator;
 
 
-// variables publiques  
+// variables publiques
 // -------------------
-	extern Commutator commutateur;  // the main commutator
+extern Commutator commutateur;
 
-// Prototypes de fonctions 
+
+// Prototypes de fonctions
 // -----------------------
 
-// Ports
-Port* 	create_and_init_port( int num);
-PortList* create_and_init_port_list();
-void init_commutator_ports ();
-PortList* create_port_list();
+unsigned short int get_port_from_options(int argc,char **argv);
+void init_commutator_and_listen_to_connections(int argc, char**argv);
+Port* init_port( int num);
+void init_all_ports_of_commutator ();
 void display_all_commutator_ports();
-Port* get_port_from_commutator(int numPort);
-
-// Commutateur
-void create_and_init_commutator();
-void add_port_to_commutator(Port* p, Commutator *c);
-void add_admins_to_commutator(Admin* a, Commutator *c);
-void *mortdefils (int sig);
-void cancel(char*);
-void init_commutator_and_listen_to_connections(int , char**);
-unsigned short int get_port_from_options(int ,char **);
-void set_port_vlan(Port*p , int nVLAN);
-
-
+Port* get_port_by_number(int numPort);
+Client* create_client();
+void display_command_list( FILE* output);
+void show_port_infos( int num_port);
+void list_port_on_commutator_with_status();
+char* get_port_infos( Port p);
 #endif

@@ -21,12 +21,10 @@ DIRS=Network Threads IPC Switch Admin
 # La cible generale
 #
 
-all: 
+all:
 	for dir in $(DIRS) ; do \
 		( cd $$dir ; make ); \
-	done   
-
-
+	done	
 #
 # La cible de nettoyage
 #
@@ -35,4 +33,3 @@ clean:
 	for dir in $(DIRS) ; do \
 	  ( cd $$dir ; make clean ); \
 	done
-

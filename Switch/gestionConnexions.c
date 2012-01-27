@@ -1,8 +1,8 @@
 /** fichier gestionConnexions.c **/
 
 /******************************************************/
-/* Ce fichier contient les procedures permettant de   */
-/* gerer les connexions des autres commutateurs       */
+/* Ce fichier contient les procedures permettant de */
+/* gerer les connexions des autres commutateurs */
 /******************************************************/
 
 /** Fichiers d'inclusion **/
@@ -22,93 +22,94 @@
 
 #include "libnet.h"
 #include "libthrd.h"
-#include "gestionConnexions.h"
-#include "commandesAdmin.h"
 #include "logger.h"
+#include "constants.h"
+#include "commutateur.h"
+#include "gestionConnexions.h"
 
 
 /** Constantes **/
 
-#define		DEFAULT_PORT		4000
-#define  	MAX_CONNEXIONS		10
-#define 	MAX_SIZE			1000
-#define 	BUFFER_SIZE			256
-#define 	SERVER_LOCAL_PORT 	5000
-#define 	SERVER_LOCAL_IP   	"127.0.0.1"
 
-
-// Functions 
+// Functions
 // ----------
 
-void handle_connection (int connected_socket) {  // côté client
-	char buffer[MAX_SIZE];
+void handle_connection (int connected_socket) { // côté client
+	char buffer[BUFFER_SIZE];
 	FILE* connected_socket_file;
+	int status;
 	int lport, dport;
 	int lport_is_set=0; // pour verifier qu'on a bien lport et dport de suite
-
-	// Affichage des infos de l'initiateur de la socket de connection
-	log_ok(("CONNEXION"))
-	fprintf(stdout,	"  %slocale   %s", BMAGENTA, BLACK);
-	displaySocketAddress(stdout, connected_socket);
 
 	// traitement de la socket de dialogue sous forme de fichier
 	connected_socket_file = fdopen(connected_socket, "w+");
 	if ( connected_socket_file < 0 ) {
-		err_log(("traitement.fdopen"))
+		err_log(("traitement.fdopen"), stderr)
 		exit(1);
 	}
 
-	// Affichage des infos du client sur la machine local
-	fprintf(stdout, "  %sdistante%s ", BMAGENTA, BLACK);
-	displayClientAddress(stdout, connected_socket);
+	// Affichage des infos du client
+	display_client_address( stderr, connected_socket) ;
 
-	// Affichage des infos du client sur la machine distante
-	fprintf(connected_socket_file, "%sCLIENT %s ", BRED, BLACK);
-	displayClientAddress(connected_socket_file, connected_socket);  // Affichage sur la machine distante
-	
+	fflush(connected_socket_file); // clean buffer
 
-	fflush(connected_socket_file);  // clean buffer
-	
 	if (fgets(buffer, BUFFER_SIZE, connected_socket_file )) {
-		if (sscanf(buffer, "lport %d\n", &lport) == 1) {
-			err_log(("handle_connection.sscanf: (lport) mauvais parametres"))
+		if (sscanf(buffer, "lport %d", &lport) != 1) {
+			log(("# Bad local port received."), stderr)
 			// envoyer un SYNTAX au commutateur pour invalider la requete
 			fprintf(connected_socket_file, SYNTAX_MSG);
+			log("# 'SYNTAX' sent.", stderr)
+			fclose(connected_socket_file);
 		}
 		else {
 			lport_is_set = 1; // on fait signe d'avoir reçu le lport
+			log("# 'lport' received.", stderr)
 
-			// send lport et dport to the 
-			fprintf(connected_socket_file, OK_MSG);
-			
-			if (fgets(buffer, BUFFER_SIZE, connected_socket_file )) {
-				if (sscanf(buffer, "dport %d\n", &lport) == 1) {
-					err_log(("handle_connection.sscanf: (dport) mauvais parametres"))
-					// envoyer un SYNTAX au commutateur pour invalider la requete
-					fprintf(connected_socket_file, SYNTAX_MSG);
-				}
-				else {
-					if (lport_is_set == 1) { 
-						fflush(connected_socket_file);  // clean buffer
-
-						// on envoie le OK pour le dport
-						fprintf(connected_socket_file, OK_MSG);	
+			// Check the BOUNDS condition
+			if (we_are_in_bounds_condition(lport, connected_socket_file)) {
+				fclose(connected_socket_file);
+			}
+			else {
+				if (fgets(buffer, BUFFER_SIZE, connected_socket_file )) {
+					if (sscanf(buffer, "dport %d", &dport) != 1) {
+						log(("Bad remote port received."), stderr)
+						// envoyer un SYNTAX au commutateur pour invalider la requete
+						fprintf(connected_socket_file, SYNTAX_MSG);
+						fclose(connected_socket_file);
+					}
+					else {
+						log("# 'dport'received.", stderr)
+						status =  we_are_in_bounds_condition(dport, connected_socket_file);
+						fclose(connected_socket_file);	
 					}
 				}
 			}
 		}
 	}
-
-	log_ok(("DECONNEXION"))
-	end_log()
-	fclose(connected_socket_file);
+	log("|-- Client disconnected", stderr)
+	
 }
 
+
+int we_are_in_bounds_condition(int port, FILE* connected_socket_file) {
+	// Check the BOUNDS condition
+	if (port < 0 || port > NBR_MAX_PORT) {
+		log(("# The port doesn't exist."), stderr)
+		// envoyer un BOUNDS au commutateur pour invalider la requete
+		fprintf(connected_socket_file, BOUNDS_MSG);
+		log("# 'BOUNDS' sent.", stderr)		
+		return TRUE;
+	}
+	else {
+		// if everything is fine send 'ok'
+		fflush(connected_socket_file); // clean buffer
+		fprintf(connected_socket_file, OK_MSG);
+		log("# 'OK' sent.", stderr)
+		return FALSE;
+	}
+}
 
 // process_activity_for: lance un processus leger pur effectuer un traitement
 void process_slight_activity_for( int contact_socket) {
-  lanceThread(handle_connection, contact_socket);
+	lanceThread(handle_connection, contact_socket);
 }
-
-
-/** Fonction principale de gestion d'une connexion **/

@@ -1,12 +1,9 @@
 
-# Makefile pour generer le client d'administration
-
-
-OBJS = admin.o
-
+OBJS = admin.o 
+LIBS = -lpthread 
 LOCAL_LIBS = -L ../Network  -L ../Threads -L ../IPC
-LOCAL_LIBS += -lnet  -lthrd -lipc
-CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Logger
+LOCAL_LIBS += -pthread  -lthrd -lnet -lipc  
+CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Utils
 
 #
 # Cible generale
@@ -19,14 +16,15 @@ all: admin
 #
 
 clean: 
-	rm -f core *.o commutateur
+	rm -f core *.o admin
 
 #
 # Les cibles pour l'executable
 #
 
 admin: $(OBJS)
-	$(CC) $(CFLAGS) -o admin $(OBJS) $(LOCAL_LIBS)
+	$(CC) $(CFLAGS) -o admin $(OBJS) $(LOCAL_LIBS) $(LIBS)
 
-admin.o: admin.c admin.h 
-	$(CC) -c $(CFLAGS) $(LOCAL_LIBS) admin.c
+admin.o: admin.c admin.h
+
+

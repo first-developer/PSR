@@ -1,15 +1,12 @@
 #
 # Makefile pour generer le commutateur virtuel
 #
-#
-# Constantes pour la compilation des programmes
-#
 
-OBJS = commutateur.o gestionConnexions.o algorithmeCommutateur.o gestionAdmin.o commandesAdmin.o  
+OBJS = commutateur.o gestionConnexions.o algorithmeCommutateur.o gestionAdmin.o commandesAdmin.o
 LIBS = -lpthread
 LOCAL_LIBS = -L ../Network  -L ../Threads -L ../IPC
-LOCAL_LIBS += -lnet  -lthrd -lipc
-CFLAGS += -I ../Network -I ../Threads -I ../IPC -I ../Logger
+LOCAL_LIBS += -pthread  -lthrd -lnet -lipc  
+CFLAGS += -I ../Network -I ../Threads -I ../Utils -I ../IPC
 
 #
 # Cible generale
@@ -29,9 +26,9 @@ clean:
 #
 
 commutateur: $(OBJS)
-	$(CC) $(CFLAGS) -o commutateur $(OBJS) $(LOCAL_LIBS) $(LIBS)
+	$(CC) $(CFLAGS)  -o commutateur $(OBJS) $(LOCAL_LIBS) $(LIBS) 
 
-commutateur.o: commutateur.c commutateur.h 
+commutateur.o: commutateur.c commutateur.h
 
 gestionConnexions.o: gestionConnexions.c commutateur.h gestionConnexions.h
 
@@ -40,4 +37,3 @@ algorithmeCommutateur.o: algorithmeCommutateur.c commutateur.h algorithmeCommuta
 gestionAdmin.o: gestionAdmin.c commutateur.h gestionAdmin.h commandesAdmin.h
 
 commandesAdmin.o: commandesAdmin.c commutateur.h commandesAdmin.h
-

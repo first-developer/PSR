@@ -1,5 +1,8 @@
 /* PSR/Threads/libthrd.h  */
 
+#ifndef LIBTHRD_H
+#define LIBTHRD_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -7,6 +10,7 @@
 #include <sys/types.h>
 #include <pthread.h>
 
+#include "commutateur.h"
 #include "libthrd.h"
 #include "logger.h"
 
@@ -21,18 +25,12 @@ typedef struct  {
 
 // Variables globales
 // ------------------
-#define NBR_MAX_PORT 5
-pthread_mutex_t mutex_client[NBR_MAX_PORT];
 
+pthread_mutex_t verrous[NBR_MAX_PORT +1]; // verrous[0] = mutex lié au commutateur 
+                                          // verrous[i] ceux liés aux port
 
 // Fonctions
 // ----------
-
-// Cancel : perror suivi d'un exit 
-void cancel( char* msg) {
-  perror(msg);
-  exit(-1);
-}
 
 // Thread_handler: 
 void * thread_handler(void *arg) {
@@ -62,14 +60,14 @@ void lanceThread(void (*fn)(int), int fn_param) {
 	// on crée le thread associé au port
 	statut = pthread_create(&_thread, NULL, (void *)thread_handler, (void*)thd_param);
 	if (statut == -1) {
-		err_log(("lanceThread.pthread_create"))
+		err_log(("lanceThread.pthread_create"), stderr)
     exit(EXIT_FAILURE);
 	}
 
   // on détache le thread
 	statut = pthread_detach(_thread);
   if (statut == -1) {
-    err_log(("lanceThread.pthread_detach"))
+    err_log(("lanceThread.pthread_detach"), stderr)
     exit(EXIT_FAILURE);
   }
 
@@ -78,19 +76,13 @@ void lanceThread(void (*fn)(int), int fn_param) {
 // primitives de gestion des semaphores
 
 void P(int S) {
-  if (S < 0) {
-    log("aucune ressources disponibles" )
-  }
-  else {
-    pthread_mutex_lock(&  (mutex_client[S]));  
-  }
-  
+  // si S=0 c'est que c'est le commutateur sinon on a à faire aux ports
+  pthread_mutex_lock(&(verrous[S])); 
 }
 
 void V(int S) {
-  if (S > NBR_MAX_PORT) {
-  }
-  else {
-    pthread_mutex_unlock(&(mutex_client[S])); 
-  }
+  pthread_mutex_unlock(&(verrous[S])); 
 }
+
+
+#endif

@@ -1,9 +1,21 @@
-/** fichier gestionConnexions.h **/
 
-/** ce fichier contient les declarations des **/
-/** objets publiques de gestionConnexions.c  **/
+#ifndef GEST_CONNEXION
+#define GEST_CONNEXION
 
-/** prototype des fonctions publiques **/
 
-void handle_connection (int connected_socket);
-void process_slight_activity_for( int contact_socket);
+
+// Constantes
+// ----------
+
+#define MAX_CONNEXIONS 		10
+#define SYNTAX_MSG 			"SYNTAX\n"
+#define OK_MSG 				"OK\n"
+#define BOUNDS_MSG 			"BOUNDS\n"
+// Prototypes
+// ----------
+
+void handle_connection (int);
+void process_slight_activity_for( int);
+int we_are_in_bounds_condition(int port, FILE* connected_socket_file);
+
+#endif

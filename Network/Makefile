@@ -2,10 +2,13 @@
 # Makefile pour generer la bibliotheque de fonctions reseau
 #
 
-CFLAGS += -I ../Network -I ../Threads -I ../IPC  -I ../Switch -I ../Logger
+INC_DIRS =  -I ../Utils
 
-all: libnet.a
-	
+export CC = gcc
+export CLIB = ar cq
+export CFLAGS = -g -Wall -DDEBUG
+
+all: 	libnet.a
 
 #
 # La cible de nettoyage
@@ -17,10 +20,8 @@ clean:
 #
 # Les cibles pour la bibliotheque
 #
-
 libnet.o: libnet.c libnet.h
-	$(CC) -c $(CFLAGS)  libnet.c
- 
+	$(CC) -c $(CFLAGS) $(INC_DIRS) $(LIBS) libnet.c
 libnet.a: libnet.o
 	rm -f $@
 	$(CLIB) $@ $+

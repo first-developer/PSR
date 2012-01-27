@@ -1,33 +1,21 @@
 #
-# Makefile for the Threads library
-#
-#
-# Constantes pour la compilation des programmes
+# Makefile pour generer la bibliotheque des processus legers
 #
 
+INC_DIRS =  -I ../Utils -I ../Switch
 export CC = gcc
 export LD = gcc
-export CLIB = ar cq -lpthread
-export CFLAGS = -g -Wall -DDEBUG -I ../Logger
+export CLIB = ar cq
+export CFLAGS = -g -Wall -DDEBUG
 
-OBJS = libthrd.o
+all:	libthrd.a
 
-all: libthrd.a
-
-#
-# Cleaning target
-#
-
-clean: 
+clean:
 	rm -f core *.o libthrd.a
 
-#
-# Library target
-#
-
-libthrd.o: libthrd.c libthrd.h
-	$(CC) -c $(CFLAGS) $(LIBS) libthrd.c
- 
-libthrd.a: $(OBJS)
-	rm -f $@
-	$(AR) rcs $@ $+
+libthrd.o: libthrd.c  libthrd.h
+	    $(CC) -c $(CFLAGS) $(INC_DIRS) libthrd.c 
+	    
+libthrd.a: libthrd.o
+	   rm -f $@
+	   $(CLIB) $@ $+
