@@ -80,7 +80,7 @@ char buffer[MAX_BUFFER_SIZE];
 		printf("|-- params: %s\n", optarg);
 
 	#define show_response_details(response) printf("Response :\n");\
-		printf("|-- body:\n%s\n", response);
+		printf("|-- body:\n%s", response);
 #else
 	help_command_list(output)
 	show_response_details(response)

@@ -14,6 +14,15 @@
 // ----------
 
 
+// Macro 
+// -----
+
+#ifdef DEBUG
+	#define sep() fprintf(stderr, "--------------------------------------------------------\n");
+#else
+	#define sep()
+#endif
+
 
 // Constants
 // ---------

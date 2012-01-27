@@ -182,6 +182,7 @@ void process_request_and_wait_response(char* cmd_name, char* params) {
 	
 	// display response getting from the server
 	show_response_details(serverResponse.body)
+	sep()
 }
 
 

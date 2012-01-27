@@ -74,6 +74,8 @@ void lister(int clientResponseID) {
 		}
 	}
 	send_response_to_client(clientResponseID, response);
+	log("# Response sent.", stderr)
+	sep()
 }
 
 
@@ -90,6 +92,7 @@ void afficher(int clientResponseID, char * params) {
 		strcpy(response,"[Error] Parsing port number from params failed.");
 		send_response_to_client(clientResponseID, response);	
 		log("# Response sent.", stderr)
+		sep()
 	}
 
 	if (!is_valid_port(num_port)) { // si le port n'est pas valide
@@ -100,6 +103,7 @@ void afficher(int clientResponseID, char * params) {
 		sprintf(response,"[Error] Port [%d] doesn't exist.\n", num_port);
 		send_response_to_client(clientResponseID, response);	
 		log("# Response sent.", stderr)
+		sep()
 	}
 	else {
 
@@ -114,7 +118,7 @@ void afficher(int clientResponseID, char * params) {
 		}
 		p = get_port_by_number(num_port);
 
-		sprintf(str, "PORT [%d]:\n", p.num);
+		sprintf(str, "PORT [%d]:\n", p.num);	
 		response = strcat(response, str);
 		build_port_state_string(p, response)
 		build_port_type_string(p, response)
@@ -122,10 +126,11 @@ void afficher(int clientResponseID, char * params) {
 		response = strcat(response, str);
 		sprintf(str, "+ rcv_size = %d\n", p.rcv_size);
 		response = strcat(response, str);
-		sprintf(str, "+ snd_size = %d\n\n", p.snd_size);
+		sprintf(str, "+ snd_size = %d\n", p.snd_size);
 		response = strcat(response, str);
-		
 		send_response_to_client(clientResponseID, response);
+		log("# Response sent.", stderr)
+		sep()
 	}
 }
 
