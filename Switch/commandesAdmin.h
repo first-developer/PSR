@@ -10,6 +10,8 @@
 
 // Inclusions
 // ----------
+
+
 #include "constants.h"
 // Constants
 // ----------
@@ -55,6 +57,8 @@ char buffer[MAX_BUFFER_SIZE];
 // Macros
 // ------
 
+#define clear() system("clear");
+
 // build the help message before send it to the client
 #define build_help_string(str) sprintf(str,"Usage:\n  [-l|--lister] \t\t# liste les ports d'un commutateur\n");\
 	strcat(str,"  [-a|--afficher <port>] \t# affiche les details d'un port\n"); \
@@ -72,8 +76,8 @@ char buffer[MAX_BUFFER_SIZE];
 #ifdef DEBUG
 	#define help_command_list(output) build_help_string(buffer);fprintf(output, "%s", buffer);
 
-	#define show_cmd_details(cmd_name, optarg)	printf("# command: %s\n", cmd_name);\
-		printf("# params: %s\n", optarg);
+	#define show_cmd_details(cmd_name, optarg)	printf("Request :\n|-- command: %s\n", cmd_name);\
+		printf("|-- params: %s\n", optarg);
 
 	#define show_response_details(response) printf("Response :\n");\
 		printf("|-- body:\n%s\n", response);
@@ -86,8 +90,8 @@ char buffer[MAX_BUFFER_SIZE];
 // Prototypes
 // -----------
 
-void lister(char* );
+void lister(int );
+void afficher(int clientResponseID, char * params);
 void connect_TAP ( int port, int mqueueID);
 void vlan (int port, int vlan);
-int get_command_id_from_command_name( char* cmd_name);
 #endif

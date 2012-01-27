@@ -87,7 +87,7 @@ void process_admin_requests(int argc,char **argv) {
 			{0, 0, 0, 0}
 	};
 
-	char* shortOptsList = "hla:A:c:C:v:s:";
+	char* shortOptsList = "hla:A:c:C:v:s:	";
 	char helpMsg[MAX_BUFFER_SIZE];
 	// Creation de l'id de la file de reponse du client 
 	AdminResponseID = create_client_response_id();
@@ -124,7 +124,7 @@ void process_admin_requests(int argc,char **argv) {
 					process_request_and_wait_response(LIST_PORT_CMD, EMPTY_PARAM);
 					break;
 				case 'a':
-					strcpy(cmd_name, SHOW_PORT_INFOS_CMD); 
+					process_request_and_wait_response(SHOW_PORT_INFOS_CMD, optarg);
 					break;
 				case 'A':
 					strcpy(cmd_name, LIST_PORT_ADDRESSES_CMD); 

@@ -49,8 +49,7 @@
 // -----------------
 Commutator commutateur;
 int clientsCount = 0;
-char infos[MAX_BUFFER_SIZE];
-
+int serverResquestID;
 
 // Helper functions
 // ----------------
@@ -109,10 +108,14 @@ void init_commutator_and_listen_to_connections(int argc, char**argv) {
 	
 	init_all_ports_of_commutator();
 
+	// Creation de l'id de la file de requete
+	serverResquestID = create_server_request_id();	
+	
+
 	// ------------------------------------------------------------------
 	// TODO: run two thread for responding to clients and purge addresses
 	// ------------------------------------------------------------------
-	lanceThread(request_admin_handler, ZERO);
+	lanceThread(request_admin_handler, serverResquestID);
 
 	// Lancement de la boucle d'écoute
 	if (boucleServeur( contact_socket, process_slight_activity_for) < 0) {
@@ -160,35 +163,22 @@ void init_all_ports_of_commutator () {
 }
 
 
-// void display_all_commutator_ports: affiche tous les ports du comutateur et leurs détails
-void display_all_commutator_ports() {
-	int i;
-	Port* ports = commutateur.ports;
-	for (i=0; i<NBR_MAX_PORT;i++) {
-		display_port_infos(ports[i] , stderr)
-	}
-}
-
-
 // get_port_by_number: recuperation du port à l'état connecté
-Port* get_port_by_number(int numPort) {
+Port get_port_by_number(int numPort) {
 	Port* ports = commutateur.ports;
 	int i;
-	Port* port;
-	if (numPort > 0 && numPort < NBR_MAX_PORT) {
+	Port port;
+	if (is_valid_port(numPort)) {
 		for (i=0; i<NBR_MAX_PORT;i++) {
 			if (ports[i].num == numPort) {
-				port = &(ports[i]);
-			}
-			else {
-				log("get_port_by_number: port indisponible", stderr)
-				port = (Port*) NULL;
+				port = ports[i];
+				break;
 			}
 		}
 	}
 	else {
 		log("get_port_by_number: mauvais numéro de port", stderr)
-		port = (Port*) NULL;
+		exit(EXIT_FAILURE);
 	}
 	return port;
 }
@@ -217,53 +207,10 @@ Client* create_client() {
 	return c;
 }
 
-
-// get_port_infos
-char* get_port_infos( Port p)	{
-	char fake_string[MAX_BUFFER_SIZE];
-	sprintf(infos, "PORT [%d]:\n", p.num);\
-	sprintf(fake_string, "+ num      = %d\n",  p.num);\
-	strcat(infos, fake_string);\
-	build_port_state_string(p,infos)\
-	build_port_type_string(p,infos)\
-	sprintf(fake_string, "+ vlan     = %d\n", p.vlan   ); \
-	strcat(infos, fake_string);\
-	sprintf(fake_string, "+ rcv_size = %d\n", p.rcv_size);\
-	strcat(infos, fake_string);\
-	sprintf(fake_string, "+ snd_size = %d\n\n", p.snd_size);\
-	strcat(infos, fake_string);\
-	return infos;
+// is_valid_port: pour voir si un numero de port est bien entre 0 et NBR_MAX_PORT
+int is_valid_port(int num) {
+	return (num >0 && num < NBR_MAX_PORT) ? TRUE : FALSE;
 }
-
-// display_command_list : affiche les commandes disponibles
-void display_command_list( FILE* output) {
-	// TODO: Envoyer plutot la chaine de caractere au client
-	help_command_list(output)
-}
-
-
-
-//list_port_on_commutator_with_status: liste les port sur un commutateur
-void list_port_on_commutator_with_status() {
-	// TODO: Envoyer plutot la chaine de caractere au client
-	display_all_commutator_ports();
-}
-
-
-// void show_port_infos( Commutator * );
-void show_port_infos( int num_port) {
-	Port* ports = commutateur.ports;
-	Port port;
-	int i;
-	for (i=0; i<NBR_MAX_PORT; i++)  {
-		port = ports[i];
-		if ( port.num == num_port) {
-			display_port_infos(port, stdout)
-			break;
-		}
-	}
-}
-
 
 
 // Procedure principale

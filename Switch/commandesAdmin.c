@@ -39,37 +39,95 @@
 // ------
 
 
-// Helper Functions
-// -----------------
 
-// get_command_id_from_command_name: retourne l'id correspondant à un nom de commande
-int get_command_id_from_command_name( char* cmd_name) {
-	if 		(!strcmp (cmd_name, LIST_PORT_CMD 		  )) { return LIST_PORT_CMD_ID; 	 	 }
-	else if (!strcmp (cmd_name, SHOW_PORT_INFOS_CMD	  )) { return SHOW_PORT_INFOS_CMD_ID;	 }				
-	else if (!strcmp (cmd_name, LIST_PORT_ADDRESSES_CMD)){ return LIST_PORT_ADDRESSES_CMD_ID;}				
-	else if (!strcmp (cmd_name, TAP_CONNECTION_CMD	  )) { return TAP_CONNECTION_CMD_ID;	 }					
-	else if (!strcmp (cmd_name, TCP_CONNECTION_CMD	  )) { return TCP_CONNECTION_CMD_ID;	 }	
-	else if (!strcmp (cmd_name, SET_PORT_VLAN_CMD	  )) { return SET_PORT_VLAN_CMD_ID;		 }	
-	else if (!strcmp (cmd_name, DISCONNECT_PORT_CMD	  )) { return DISCONNECT_PORT_CMD_ID;	 }	
-	else if (!strcmp (cmd_name, SHOW_PORT_STAT_CMD	  )) { return SHOW_PORT_STAT_CMD_ID;	 }	
-	else if (!strcmp (cmd_name, TRIGGER_EVENTS_CMD	  )) { return TRIGGER_EVENTS_CMD_ID;	 }	
-	else if (!strcmp (cmd_name, SNIFFER_PORT_CMD	  )) { return SNIFFER_PORT_CMD_ID;		 }	
-	else if (!strcmp (cmd_name, STOP_CMD			  )) { return STOP_CMD_ID;				 }
-	else { return NO_CMD_ID;};										
-}
-
+// Fonctions 
+// ----------
 
 // lister: liste les ports d'un commutateur
-void lister(char* response) {
+void lister(int clientResponseID) {
 	Port* ports = commutateur.ports;
+	char* response = (char*) malloc(sizeof(char)* MAX_BUFFER_SIZE);
 	char str[MAX_BUFFER_SIZE];
+	Port p;
 	int i;
-	for (i=0; i<NBR_MAX_PORT; i++)  {
-		strcpy(str, get_port_infos(ports[i]));
-		strcat(response, str);
+
+	log("# Building response ...", stderr)
+#ifdef DEBUG
+	printf("# Processing response (responseID: %d) ...\n", clientResponseID);
+#endif
+
+	if ( response == NULL) {
+		err_log("get_port_infos.malloc", stderr)
+		exit(EXIT_FAILURE);
 	}
+	strcpy(response, "");
+	
+	for (i=0; i<NBR_MAX_PORT; i++)  {
+		p = ports[i];
+		sprintf(str, "PORT [%d]: ", p.num);
+		response = strcat(response, str);
+		if (p.state == PORT_STATE_CONNECTED ) {
+			response = strcat(response, " connected\n");
+		}
+		else {
+			response = strcat(response, " disconnected\n");
+		}
+	}
+	send_response_to_client(clientResponseID, response);
 }
 
+
+// afficher: affihce les infos sur un port 
+void afficher(int clientResponseID, char * params) {
+	char* response = (char*) malloc(sizeof(char)* MAX_BUFFER_SIZE);
+	char str[MAX_BUFFER_SIZE];
+	Port p;
+	int num_port;
+
+	if (sscanf(params, "%d", &num_port) != 1) {
+		log(("[Error] Parsing port number from params failed."), stderr)
+		log("# Sending error to client ...", stderr)
+		strcpy(response,"[Error] Parsing port number from params failed.");
+		send_response_to_client(clientResponseID, response);	
+		log("# Response sent.", stderr)
+	}
+
+	if (!is_valid_port(num_port)) { // si le port n'est pas valide
+#ifdef DEBUG
+		fprintf(stderr,"# [Error] Port [%d] doesn't exist.\n", num_port);
+#endif
+		log("# Sending error to client ...", stderr)
+		sprintf(response,"[Error] Port [%d] doesn't exist.\n", num_port);
+		send_response_to_client(clientResponseID, response);	
+		log("# Response sent.", stderr)
+	}
+	else {
+
+		log("# Building response ...", stderr)
+	#ifdef DEBUG
+		printf("# Processing response (responseID: %d) ...\n", clientResponseID);
+	#endif
+
+		if ( response == NULL) {
+			err_log("get_port_infos.malloc", stderr)
+			exit(EXIT_FAILURE);
+		}
+		p = get_port_by_number(num_port);
+
+		sprintf(str, "PORT [%d]:\n", p.num);
+		response = strcat(response, str);
+		build_port_state_string(p, response)
+		build_port_type_string(p, response)
+		sprintf(str, "+ vlan     = %d\n", p.vlan ); 
+		response = strcat(response, str);
+		sprintf(str, "+ rcv_size = %d\n", p.rcv_size);
+		response = strcat(response, str);
+		sprintf(str, "+ snd_size = %d\n\n", p.snd_size);
+		response = strcat(response, str);
+		
+		send_response_to_client(clientResponseID, response);
+	}
+}
 
 
 /*

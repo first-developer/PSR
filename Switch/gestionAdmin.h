@@ -21,4 +21,5 @@
 // Prototypes
 // -----------
 
+int get_command_id_from_command_name( char* cmd_name);
 void request_admin_handler(int arg);
