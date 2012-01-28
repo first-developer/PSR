@@ -122,11 +122,11 @@ void afficher(int clientResponseID, char * params) {
 		response = strcat(response, str);
 		build_port_state_string(p, response)
 		build_port_type_string(p, response)
-		sprintf(str, "+ vlan     = %d\n", p.vlan ); 
+		sprintf(str, "  |-Vlan     = %d\n", p.vlan ); 
 		response = strcat(response, str);
-		sprintf(str, "+ rcv_size = %d\n", p.rcv_size);
+		sprintf(str, "  |-Rcv_size = %d\n", p.rcv_size);
 		response = strcat(response, str);
-		sprintf(str, "+ snd_size = %d\n", p.snd_size);
+		sprintf(str, "  |-Snd_size = %d\n", p.snd_size);
 		response = strcat(response, str);
 		send_response_to_client(clientResponseID, response);
 		log("# Response sent.", stderr)

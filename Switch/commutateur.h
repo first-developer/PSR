@@ -40,19 +40,19 @@
 
 #ifdef DEBUG
 	#define build_port_state_string(p,buffer)		if (p.state == PORT_STATE_CONNECTED ) {\
-			buffer = strcat(buffer, "+ etat     = connected\n");\
+			buffer = strcat(buffer, "  |-Etat     = connected\n");\
 		}\
 		else {\
-			buffer = strcat(buffer, "+ etat     = disconnected\n");\
+			buffer = strcat(buffer, "  |-etat     = disconnected\n");\
 		}
 	#define build_port_type_string(p,buffer)		if (p.type == INTF_ETHERNET_PORT_TYPE ) {\
-			buffer = strcat(buffer, "+ type     = Ethernet Interface\n");\
+			buffer = strcat(buffer, "  |-Type     = Ethernet Interface\n");\
 		}\
 		else if (p.type == TCP_CONNECTION_PORT_TYPE ){\
-			buffer = strcat(buffer, "+ type     = TCP connection\n");\
+			buffer = strcat(buffer, "  |-Type     = TCP connection\n");\
 		}\
 		else {\
-			buffer = strcat(buffer, "+ type     = no type\n");\
+			buffer = strcat(buffer, "  |-Type     = no type\n");\
 		}
 
 #else
