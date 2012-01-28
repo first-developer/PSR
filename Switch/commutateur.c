@@ -169,6 +169,9 @@ Port get_port_by_number(int numPort) {
 	Port* ports = commutateur.ports;
 	int i;
 	Port port;
+#ifdef DEBUG
+	fprintf(stderr, "# Getting the port by the given number [%d]\n", numPort);
+#endif
 	if (is_valid_port(numPort)) {
 		for (i=0; i<NBR_MAX_PORT;i++) {
 			if (ports[i].num == numPort) {

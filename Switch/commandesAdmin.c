@@ -230,6 +230,7 @@ void stats(int clientResponseID, char * params) {
 			err_log("get_port_infos.malloc", stderr)
 			exit(EXIT_FAILURE);
 		}
+		
 		p = get_port_by_number(num_port);
 
 		// Get port stats info
