@@ -70,6 +70,12 @@ void request_admin_handler(int serverResquestID) {
 			case SHOW_PORT_INFOS_CMD_ID:
 				afficher(adminRequest.clientResponseID, adminRequest.params);
 				break;
+			case LIST_PORT_ADDRESSES_CMD_ID:
+				adresses(adminRequest.clientResponseID, adminRequest.params);
+				break;
+			case SHOW_PORT_STAT_CMD_ID:
+				stats(adminRequest.clientResponseID, adminRequest.params);
+				break;
 			default:
 				break;
 		}
