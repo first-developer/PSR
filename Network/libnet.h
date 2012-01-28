@@ -13,6 +13,21 @@
 
 /**** Constantes ****/
 
+#define TAP_PRINCIPAL	"/dev/net/tun"
+
+#define ETHERNET_STRING_MAX		18
+#define ETHERNET_PACKET_MAX		1518
+#define ETHERNET_ADDRESS_SIZE 	6
+
+// Adresse ethernet
+typedef struct {
+  unsigned char bytes[ETHERNET_ADDRESS_SIZE];
+} EthernetAddress;
+
+
+
+
+
 /**** Fonctions ****/
 
 #ifdef DEBUG
@@ -28,6 +43,5 @@ int boucleServeur(int,void (*)(int));
 int creationInterfaceVirtuelle(char *);
 void display_client_address( FILE* output, int socket);
 void display_server_address( FILE* output, int socket);
-
-
+char *ethernet_address_to_string(EthernetAddress ethernet);
 #endif

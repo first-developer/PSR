@@ -2,6 +2,7 @@
 #ifndef COMMUTATEUR_H
 #define COMMUTATEUR_H 
 
+#include "../Network/libnet.h"
 #include "constants.h"
 // Constants
 // ----------
@@ -12,7 +13,7 @@
 #define SERVER_LOCAL_PORT 			5000
 #define SERVER_LOCAL_IP 			"127.0.0.1"
 
-#define ETHERNET_ADDRESS_SIZE 		6
+
 
 #define NBR_MAX_PORT 				5
 #define NBR_MAX_CLIENT 				5
@@ -65,17 +66,13 @@
 // Structures
 // ----------
 
-// Adresse ethernet
-typedef struct {
-  unsigned char bytes[ETHERNET_ADDRESS_SIZE];
-} EthernetAddress;
-
 // Port
 typedef struct {
 short int num;						// numero de port
 int state; 							// Etat du port
 int type;  							// Type du port
 EthernetAddress addresses[NBR_MAX_ETHERNET_ADDR];
+int nb_addresses;					// indice de la dernière adresse ethernet entrée
 int vlan; 							// Numéro de VLAN
 int fd; 							// descripteur d' Interface Ethernet Virtuelle 
 int sd; 							// descripteur de socket
@@ -111,4 +108,8 @@ void init_all_ports_of_commutator ();
 Port get_port_by_number(int numPort);
 Client* create_client();
 int is_valid_port(int);
+void add_ethernet_address_to_port(int num_port, EthernetAddress* eth_addr);
+int is_full_of_addresses(Port p) ;
+
+
 #endif

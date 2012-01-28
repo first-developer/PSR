@@ -144,6 +144,7 @@ Port* init_port( int num) {
 	p->sd			= 0;
 	p->rcv_size 	= 0;
 	p->snd_size 	= 0;
+	p->nb_addresses = 0;
 	return p;
 }
 
@@ -181,6 +182,26 @@ Port get_port_by_number(int numPort) {
 		exit(EXIT_FAILURE);
 	}
 	return port;
+}
+
+
+// add_ethernet_address_to_port: ajouter une adresse ethernet à un port
+void add_ethernet_address_to_port(int num_port, EthernetAddress* eth_addr) {
+	Port p;
+	p = get_port_by_number(num_port);
+
+	if (!is_full_of_addresses(p)) { // si on an encre de la place pour ajouter des addresses 
+		P(p.num); // Verrou sur le port 
+		p.nb_addresses = p.nb_addresses +1; 
+		p.addresses[p.nb_addresses] = *eth_addr;
+		V(p.num); // Rend le verrou
+	}
+}
+
+
+// is_full_of_addresses: check if there is enought place to store an address 
+int is_full_of_addresses(Port p) {
+	return (p.nb_addresses >=0 && p.nb_addresses < NBR_MAX_ETHERNET_ADDR) ? FALSE : TRUE;
 }
 
 

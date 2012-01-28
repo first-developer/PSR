@@ -28,13 +28,16 @@
 #include <pthread.h>
 #include "libnet.h"
 #include "logger.h"
-/**** Constantes ****/
 
-#define TAP_PRINCIPAL	"/dev/net/tun"
 
-/**** Variables globales *****/
 
-/**** Fonctions de gestion des sockets ****/
+
+// Global variables
+// -----------------
+
+EthernetAddress ETHERNET_ADDRESS_NULL={{0x00,0x00,0x00,0x00,0x00,0x00}};
+EthernetAddress ETHERNET_ADDRESS_BROADCAST={{0xFF,0x0FF,0xFF,0xFF,0xFF,0xFF}};
+
 
 #ifdef DEBUG
 /** Impression d'une adresse generale **/
@@ -232,4 +235,20 @@ int creationInterfaceVirtuelle(char *nom){
 	if(nom!=NULL) strcpy(nom,interface.ifr_name);
 
 	return fd;
+}
+
+
+
+// Convert Ethernet address to string
+char *ethernet_address_to_string(EthernetAddress ethernet){
+static char string[ETHERNET_STRING_MAX];
+string[0]='\0';
+int i;
+for(i=0;i<ETHERNET_ADDRESS_SIZE;i++){
+  char byte[ETHERNET_STRING_MAX];
+  sprintf(byte,"%02x",ethernet.bytes[i]);
+  strcat(string,byte);
+  if(i<ETHERNET_ADDRESS_SIZE-1) strcat(string,":");
+  }
+return string;
 }
