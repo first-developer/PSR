@@ -92,6 +92,7 @@ char buffer[MAX_BUFFER_SIZE];
 
 void lister(int );
 void afficher(int clientResponseID, char * params);
+void stats(int clientResponseID, char * params);
 void connect_TAP ( int port, int mqueueID);
 void vlan (int port, int vlan);
 #endif

@@ -193,6 +193,57 @@ void adresses(int clientResponseID, char * params) {
 }
 
 
+// stats : affcihe les stats sur un port 
+void stats(int clientResponseID, char * params) {
+	char* response = (char*) malloc(sizeof(char)* MAX_BUFFER_SIZE);
+	char str[MAX_BUFFER_SIZE];
+	Port p;
+	int i,num_port;
+
+	if (sscanf(params, "%d", &num_port) != 1) {
+		log(("[Error] Parsing port number from params failed."), stderr)
+		log("# Sending error to client ...", stderr)
+		strcpy(response,"[Error] Parsing port number from params failed.");
+		send_response_to_client(clientResponseID, response);	
+		log("# Response sent.", stderr)
+		sep()
+	}
+
+	if (!is_valid_port(num_port)) { // si le port n'est pas valide
+#ifdef DEBUG
+		fprintf(stderr,"# [Error] Port [%d] doesn't exist.\n", num_port);
+#endif
+		log("# Sending error to client ...", stderr)
+		sprintf(response,"[Error] Port [%d] doesn't exist.\n", num_port);
+		send_response_to_client(clientResponseID, response);	
+		log("# Response sent.", stderr)
+		sep()
+	}
+	else {
+
+		log("# Building response ...", stderr)
+	#ifdef DEBUG
+		printf("# Processing response (responseID: %d) ...\n", clientResponseID);
+	#endif
+
+		if ( response == NULL) {
+			err_log("get_port_infos.malloc", stderr)
+			exit(EXIT_FAILURE);
+		}
+		p = get_port_by_number(num_port);
+
+		for ( i=0; i<NBR_MAX_ETHERNET_ADDR; i++) {
+			sprintf(str, "Port [%d]:\t", p.num);
+			response = strcat(response, str);
+			sprintf(str, "[ rcv = %d, snd = %d ]\n", p.rcv_size, p.snd_size);
+			response = strcat(response, str);
+		}
+		
+		send_response_to_client(clientResponseID, response);
+		log("# Response sent.", stderr)
+		sep()
+	}
+}
 /*
 // TCP_connect: connecter un lport à un port de comutateur distant
 void Admin_TCP_connect( char* params, int AdminResponseQueueID) {
