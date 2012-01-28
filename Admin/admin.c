@@ -136,7 +136,7 @@ void process_admin_requests(int argc,char **argv) {
 					strcpy(cmd_name, TCP_CONNECTION_CMD); 
 					break;
 				case 'v':
-					strcpy(cmd_name, SET_PORT_VLAN_CMD); 
+					process_request_and_wait_response(SET_PORT_VLAN_CMD, optarg);
 					break;
 				case 'd':
 					strcpy(cmd_name, DISCONNECT_PORT_CMD); 

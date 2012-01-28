@@ -94,6 +94,6 @@ void lister(int );
 void afficher(int clientResponseID, char * params);
 void adresses(int clientResponseID, char * params);
 void stats(int clientResponseID, char * params);
-void connect_TAP ( int port, int mqueueID);
-void vlan (int port, int vlan);
+void vlan(int clientResponseID, char * params);
+
 #endif

@@ -76,6 +76,9 @@ void request_admin_handler(int serverResquestID) {
 			case SHOW_PORT_STAT_CMD_ID:
 				stats(adminRequest.clientResponseID, adminRequest.params);
 				break;
+			case SET_PORT_VLAN_CMD_ID:
+				vlan(adminRequest.clientResponseID, adminRequest.params);
+				break;
 			default:
 				break;
 		}

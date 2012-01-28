@@ -49,10 +49,10 @@
 			buffer = strcat(buffer, "+ type     = Ethernet Interface\n");\
 		}\
 		else if (p.type == TCP_CONNECTION_PORT_TYPE ){\
-			buffer = strcat(buffer, "+ type     = Connexion TCP\n");\
+			buffer = strcat(buffer, "+ type     = TCP connection\n");\
 		}\
 		else {\
-			buffer = strcat(buffer, "+ type     = Aucun type\n");\
+			buffer = strcat(buffer, "+ type     = no type\n");\
 		}
 
 #else
