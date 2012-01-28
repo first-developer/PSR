@@ -127,7 +127,7 @@ void process_admin_requests(int argc,char **argv) {
 					process_request_and_wait_response(SHOW_PORT_INFOS_CMD, optarg);
 					break;
 				case 'A':
-					strcpy(cmd_name, LIST_PORT_ADDRESSES_CMD); 
+					process_request_and_wait_response(LIST_PORT_ADDRESSES_CMD, optarg);
 					break;
 				case 'c':
 					strcpy(cmd_name, TAP_CONNECTION_CMD); 
@@ -142,7 +142,7 @@ void process_admin_requests(int argc,char **argv) {
 					strcpy(cmd_name, DISCONNECT_PORT_CMD); 
 					break;
 				case 's':
-					strcpy(cmd_name, SHOW_PORT_STAT_CMD); 
+					process_request_and_wait_response(SHOW_PORT_STAT_CMD, optarg);
 					break;					
 				case  '?':
 					log("commande(s) inconnue(s). ", stderr)

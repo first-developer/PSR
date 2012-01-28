@@ -179,7 +179,7 @@ void adresses(int clientResponseID, char * params) {
 		addresses = p.addresses;
 
 		for ( i=0; i<NBR_MAX_ETHERNET_ADDR; i++) {
-			sprintf(str, "addresse [%d]:\n", i+1);
+			sprintf(str, "addresse [%d]: ", i+1);
 			response = strcat(response, str);
 			strcpy(str, ethernet_address_to_string(addresses[i]));
 			response = strcat(response, str);
@@ -232,12 +232,11 @@ void stats(int clientResponseID, char * params) {
 		}
 		p = get_port_by_number(num_port);
 
-		for ( i=0; i<NBR_MAX_ETHERNET_ADDR; i++) {
-			sprintf(str, "Port [%d]:\t", p.num);
-			response = strcat(response, str);
-			sprintf(str, "[ rcv = %d, snd = %d ]\n", p.rcv_size, p.snd_size);
-			response = strcat(response, str);
-		}
+		// Get port stats info
+		sprintf(str, "Port [%d]:", p.num);
+		response = strcat(response, str);
+		sprintf(str, " rcv = %d : snd = %d \n", p.rcv_size, p.snd_size);
+		response = strcat(response, str);
 		
 		send_response_to_client(clientResponseID, response);
 		log("# Response sent.", stderr)
